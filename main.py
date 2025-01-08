@@ -1,3 +1,4 @@
+
 import json
 import os
 import numpy as np
@@ -52,7 +53,7 @@ def analyze_wordcount_stat(analysed_poems):
 # func to analyse the sentiment of poems
 def analyze_sentiment_stat(analyszed_poems):
     sentiments = [p['sentiment'] for p in analyszed_poems]
-
+    # Todo: Add frequency distribution
     # Calculate overall statistics
     overall_stats = {
         'average_sentiment': np.mean(sentiments),
