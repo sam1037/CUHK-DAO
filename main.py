@@ -1,4 +1,3 @@
-
 import json
 import os
 import numpy as np
@@ -26,7 +25,7 @@ def analyze_poem(poem):
         'sentiment': sentiment
     }
 
-# function to get analysis about word count: mean median, sd, min, max, freq dist
+# function to get analysis about word count: mean median, sd, min, max, freq dist and plot the histogram of 
 def analyze_wordcount_stat(analysed_poems):
     # Store word counts for each verse
     word_counts = [p['chars_no_punct'] for p in analysed_poems]
@@ -37,6 +36,15 @@ def analyze_wordcount_stat(analysed_poems):
     # Create a frequency distribution
     unique_counts = np.unique(word_counts, return_counts=True)
     freq_dist = {count: freq for count, freq in zip(unique_counts[0], unique_counts[1])}
+
+    # Plot histogram of word counts
+    plt.figure(figsize=(8, 6))
+    plt.hist(word_counts, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
+    plt.title('Word Count Distribution', fontsize=16)
+    plt.xlabel('Word Count', fontsize=14)
+    plt.ylabel('Frequency', fontsize=14)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
     
     # Calculate statistics
     stats = {
@@ -47,7 +55,8 @@ def analyze_wordcount_stat(analysed_poems):
         'Max': np.max(word_counts),
         'freq_dist': freq_dist
     }
-    
+
+    # Plot Box diagram of word counts
     return stats
 
 # func to analyse the sentiment of poems
@@ -130,3 +139,4 @@ sentiment_result = analyze_sentiment_stat(analyses)
 print("Statistical Analysis of Poem Word Counts:")
 print(wordcount_stat)
 print(sentiment_result)
+
