@@ -120,8 +120,6 @@ def visualize_sentiment_stat(sentiment_stats):
     plt.grid(axis='x', linestyle='--', alpha=0.7)
     plt.show()
 
-
-
 def generate_word_cloud(poems):
     # Combine all poems' text, exclude common chinese words
     stopwords = set(['的', '了', '和', '是', '在', '我', '有', '而', '你', '也',
