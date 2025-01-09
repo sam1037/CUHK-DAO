@@ -77,7 +77,7 @@ def visualize_wordcount_stat(wc_stats):
 
     # box and whisker plot
     plt.figure(figsize=(8, 6))
-    plt.boxplot(word_counts, vert=False) #don't know why the whiskey line don't show
+    plt.boxplot(word_counts, vert=False) 
     
     plt.title('Word Count Distribution (box and whiskey)', fontsize=16)
     plt.xlabel('Word Count', fontsize=14)
@@ -88,7 +88,6 @@ def visualize_wordcount_stat(wc_stats):
 # func to analyse the sentiment of poems
 def analyze_sentiment_stat(analyszed_poems):
     sentiments = [p['sentiment'] for p in analyszed_poems]
-    # Todo: Add frequency distribution
     # Calculate overall statistics
     overall_stats = {
         'average_sentiment': np.mean(sentiments),
@@ -104,7 +103,7 @@ def visualize_sentiment_stat(sentiment_stats):
     sentiments = sentiment_stats['sentiments']
     plt.figure(figsize=(8, 6))
     plt.hist(sentiments, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
-    plt.title('Sentiment Score Distribution', fontsize=16)
+    plt.title('Sentiment Score Distribution (freq dist)', fontsize=16)
     plt.xlabel('Sentiment Score', fontsize=14)
     plt.ylabel('Frequency', fontsize=14)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
@@ -112,7 +111,7 @@ def visualize_sentiment_stat(sentiment_stats):
 
     # box and whisker plot
     plt.figure(figsize=(8, 6))
-    plt.boxplot(sentiments, vert=False) #don't know why the whiskey line show for this one
+    plt.boxplot(sentiments, vert=False) 
     
     plt.title('Sentiment Score Distribution (box and whiskey)', fontsize=16)
     plt.xlabel('Sentiment score', fontsize=14)
