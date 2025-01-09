@@ -25,7 +25,7 @@ def analyze_poem(poem):
         'sentiment': sentiment
     }
 
-# function to get analysis about word count: mean median, sd, min, max, freq dist and plot the histogram of 
+# function to get analysis about word (actaully char) count: mean median, sd, min, max, freq dist and plot the histogram of 
 def analyze_wordcount_stat(analysed_poems):
     # Store word counts for each verse
     word_counts = [p['chars_no_punct'] for p in analysed_poems]
@@ -38,6 +38,7 @@ def analyze_wordcount_stat(analysed_poems):
     freq_dist = {count: freq for count, freq in zip(unique_counts[0], unique_counts[1])}
 
     # Plot histogram of word counts
+    """
     plt.figure(figsize=(8, 6))
     plt.hist(word_counts, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
     plt.title('Word Count Distribution', fontsize=16)
@@ -45,6 +46,7 @@ def analyze_wordcount_stat(analysed_poems):
     plt.ylabel('Frequency', fontsize=14)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
+    """
     
     # Calculate statistics
     stats = {
@@ -53,11 +55,35 @@ def analyze_wordcount_stat(analysed_poems):
         'Standard Deviation': round(np.std(word_counts), 2),
         'Min': np.min(word_counts),
         'Max': np.max(word_counts),
-        'freq_dist': freq_dist
+        'freq_dist': freq_dist,
+        'word_counts': word_counts
     }
 
-    # Plot Box diagram of word counts
+    
     return stats
+
+# function to visualize the word count stat: freq dist and box diagrams
+def visualize_wordcount_stat(wc_stats):
+    # plot freq dist for wc
+    word_counts = wc_stats['word_counts']
+
+    plt.figure(figsize=(8, 6))
+    plt.hist(word_counts, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
+    plt.title('Word Count Distribution (freq dist)', fontsize=16)
+    plt.xlabel('Word Count', fontsize=14)
+    plt.ylabel('Frequency', fontsize=14)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
+
+    # box and whisker plot
+    plt.figure(figsize=(8, 6))
+    plt.boxplot(word_counts, vert=False) #don't know why the whiskey line don't show
+    
+    plt.title('Word Count Distribution (box and whiskey)', fontsize=16)
+    plt.xlabel('Word Count', fontsize=14)
+    plt.yticks([])
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    plt.show()
 
 # func to analyse the sentiment of poems
 def analyze_sentiment_stat(analyszed_poems):
@@ -67,9 +93,33 @@ def analyze_sentiment_stat(analyszed_poems):
     overall_stats = {
         'average_sentiment': np.mean(sentiments),
         'median_sentiment': np.median(sentiments),
-        'std_sentiment': np.std(sentiments)
+        'std_sentiment': np.std(sentiments),
+        'sentiments': sentiments
     }
     return overall_stats
+
+# function to visualize the sentiment stat: freq dist and box diagrams
+def visualize_sentiment_stat(sentiment_stats):
+    # plot freq dist for sentiment
+    sentiments = sentiment_stats['sentiments']
+    plt.figure(figsize=(8, 6))
+    plt.hist(sentiments, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
+    plt.title('Sentiment Score Distribution', fontsize=16)
+    plt.xlabel('Sentiment Score', fontsize=14)
+    plt.ylabel('Frequency', fontsize=14)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
+
+    # box and whisker plot
+    plt.figure(figsize=(8, 6))
+    plt.boxplot(sentiments, vert=False) #don't know why the whiskey line show for this one
+    
+    plt.title('Sentiment Score Distribution (box and whiskey)', fontsize=16)
+    plt.xlabel('Sentiment score', fontsize=14)
+    plt.yticks([])
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    plt.show()
+
 
 
 def generate_word_cloud(poems):
@@ -111,6 +161,44 @@ def generate_word_cloud(poems):
     plt.axis('off')
     plt.show()
 
+#TODO: wording complexity analysis
+
+# this function is to do topic modeling, developing, not completed
+def topic_modeling(poems):
+    stop_words = set(['了', '的', '在', '與', '和', '是', '都', '而', '及', '著', '就', '從'])
+
+    from gensim import corpora, models
+    
+    poems_text = []
+    for poem in poems:
+        # Join all lines in the poem
+        full_poem = ''.join(poem['body'])
+        poems_text.append(full_poem)
+    # Assuming poems is your list of Chinese verses
+    # 1. Tokenize
+    tokenized_poems = [jieba.lcut(poem) for poem in poems_text]
+
+    # 2. Create dictionary
+    dictionary = corpora.Dictionary(tokenized_poems)
+
+    # 3. Create document-term matrix
+    corpus = [dictionary.doc2bow(poem) for poem in tokenized_poems]
+
+    # 4. Train LDA model
+    num_topics = 5  # You can adjust this
+    lda_model = models.LdaModel(
+        corpus=corpus,
+        id2word=dictionary,
+        num_topics=num_topics,
+        random_state=42,
+        passes=10
+    )
+
+    # 5. Print topics
+    for idx, topic in lda_model.print_topics():
+        print(f'Topic {idx + 1}:')
+        print(topic)
+
 
 # Read all JSON files from the data folder
 poems = []
@@ -128,14 +216,15 @@ for filename in os.listdir(data_folder):
             print(f"Unexpected error with file: {filename} - {e}")
 
 
-
 # analyze
 analyses = [analyze_poem(poem) for poem in poems]
 wordcount_stat = analyze_wordcount_stat(analyses)
-generate_word_cloud(poems)
 sentiment_result = analyze_sentiment_stat(analyses)
 
 # Display results (TODO visualize)
+# generate_word_cloud(poems)
+visualize_wordcount_stat(wordcount_stat)
+visualize_sentiment_stat(sentiment_result)
 print("Statistical Analysis of Poem Word Counts:")
 print(wordcount_stat)
 print(sentiment_result)
