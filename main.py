@@ -69,9 +69,9 @@ def visualize_wordcount_stat(wc_stats):
 
     plt.figure(figsize=(8, 6))
     plt.hist(word_counts, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
-    plt.title('Word Count Distribution (freq dist)', fontsize=16)
+    plt.title('Word Count Distribution', fontsize=16)
     plt.xlabel('Word Count', fontsize=14)
-    plt.ylabel('Frequency', fontsize=14)
+    plt.ylabel('Number', fontsize=14)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
@@ -103,9 +103,9 @@ def visualize_sentiment_stat(sentiment_stats):
     sentiments = sentiment_stats['sentiments']
     plt.figure(figsize=(8, 6))
     plt.hist(sentiments, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
-    plt.title('Sentiment Score Distribution (freq dist)', fontsize=16)
+    plt.title('Sentiment Score Distribution', fontsize=16)
     plt.xlabel('Sentiment Score', fontsize=14)
-    plt.ylabel('Frequency', fontsize=14)
+    plt.ylabel('Number', fontsize=14)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
@@ -219,7 +219,7 @@ wordcount_stat = analyze_wordcount_stat(analyses)
 sentiment_result = analyze_sentiment_stat(analyses)
 
 # Display results (TODO visualize)
-# generate_word_cloud(poems)
+generate_word_cloud(poems)
 visualize_wordcount_stat(wordcount_stat)
 visualize_sentiment_stat(sentiment_result)
 print("Statistical Analysis of Poem Word Counts:")
