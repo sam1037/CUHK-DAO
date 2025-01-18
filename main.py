@@ -6,6 +6,7 @@ from wordcloud import WordCloud
 import jieba
 from collections import Counter
 from snownlp import SnowNLP
+from wordingComplexity import analyze_poem_complexity, visualize_complexity_stats
 
 # function to get basic info of a poem
 def analyze_poem(poem):
@@ -196,32 +197,40 @@ def topic_modeling(poems):
         print(f'Topic {idx + 1}:')
         print(topic)
 
+# function to load data
+def loadPoemData():
+    # Read all JSON files from the data folder
+    poems = []
+    data_folder = 'data'
 
-# Read all JSON files from the data folder
-poems = []
-data_folder = 'data'
+    for filename in os.listdir(data_folder):
+        #print(filename)
+        if filename.endswith('.json'):
+            file_path = os.path.join(data_folder, filename)
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    #print(f.read())
+                    poems.append(json.load(f))
+            except Exception as e:
+                print(f"Unexpected error with file: {filename} - {e}")
 
-for filename in os.listdir(data_folder):
-    #print(filename)
-    if filename.endswith('.json'):
-        file_path = os.path.join(data_folder, filename)
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                #print(f.read())
-                poems.append(json.load(f))
-        except Exception as e:
-            print(f"Unexpected error with file: {filename} - {e}")
+    return poems
 
 
+# main part
+poems = loadPoemData()
+print(f"Loaded {len(poems)} poems.")
 # analyze
 analyses = [analyze_poem(poem) for poem in poems]
 wordcount_stat = analyze_wordcount_stat(analyses)
 sentiment_result = analyze_sentiment_stat(analyses)
+complexity_stat = [analyze_poem_complexity(poem) for poem in poems]
 
 # Display results (TODO visualize)
 generate_word_cloud(poems)
 visualize_wordcount_stat(wordcount_stat)
 visualize_sentiment_stat(sentiment_result)
+visualize_complexity_stats(complexity_stat)
 print("Statistical Analysis of Poem Word Counts:")
 print(wordcount_stat)
 print(sentiment_result)
