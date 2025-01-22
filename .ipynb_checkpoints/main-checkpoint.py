@@ -6,7 +6,6 @@ from wordcloud import WordCloud
 import jieba
 from collections import Counter
 from snownlp import SnowNLP
-from wordingComplexity import analyze_poem_complexity, visualize_complexity_stats
 
 # function to get basic info of a poem
 def analyze_poem(poem):
@@ -70,9 +69,9 @@ def visualize_wordcount_stat(wc_stats):
 
     plt.figure(figsize=(8, 6))
     plt.hist(word_counts, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
-    plt.title('Word Count Distribution', fontsize=16)
+    plt.title('Word Count Distribution (freq dist)', fontsize=16)
     plt.xlabel('Word Count', fontsize=14)
-    plt.ylabel('Number', fontsize=14)
+    plt.ylabel('Frequency', fontsize=14)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
@@ -104,9 +103,9 @@ def visualize_sentiment_stat(sentiment_stats):
     sentiments = sentiment_stats['sentiments']
     plt.figure(figsize=(8, 6))
     plt.hist(sentiments, bins=5, color='skyblue', edgecolor='black', alpha=0.7)
-    plt.title('Sentiment Score Distribution', fontsize=16)
+    plt.title('Sentiment Score Distribution (freq dist)', fontsize=16)
     plt.xlabel('Sentiment Score', fontsize=14)
-    plt.ylabel('Number', fontsize=14)
+    plt.ylabel('Frequency', fontsize=14)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
@@ -197,61 +196,32 @@ def topic_modeling(poems):
         print(f'Topic {idx + 1}:')
         print(topic)
 
-# function to load data
-'''
-def loadPoemData():
-    # Read all JSON files from the data folder
-    poems = []
-    data_folder = 'data'
 
-    for filename in os.listdir(data_folder):
-        #print(filename)
-        if filename.endswith('.json'):
-            file_path = os.path.join(data_folder, filename)
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    #print(f.read())
-                    poems.append(json.load(f))
-            except Exception as e:
-                print(f"Unexpected error with file: {filename} - {e}")
+# Read all JSON files from the data folder
+poems = []
+data_folder = 'data'
 
-    return poems
-'''
+for filename in os.listdir(data_folder):
+    #print(filename)
+    if filename.endswith('.json'):
+        file_path = os.path.join(data_folder, filename)
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                #print(f.read())
+                poems.append(json.load(f))
+        except Exception as e:
+            print(f"Unexpected error with file: {filename} - {e}")
 
-def loadPoemData():
-    # Initialize a list to store poems
-    poems = []
-    data_folder = 'data'  # Root folder containing the issue folders
 
-    # Recursively walk through the folder structure
-    for root, dirs, files in os.walk(data_folder):
-        for filename in files:
-            # Process only JSON files
-            if filename.endswith('.json'):
-                file_path = os.path.join(root, filename)  # Construct the full file path
-                try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        # Load the JSON file and append to the poems list
-                        poems.append(json.load(f))
-                except Exception as e:
-                    print(f"Unexpected error with file: {file_path} - {e}")
-
-    return poems
-
-# main part
-poems = loadPoemData()
-print(f"Loaded {len(poems)} poems.")
 # analyze
 analyses = [analyze_poem(poem) for poem in poems]
 wordcount_stat = analyze_wordcount_stat(analyses)
 sentiment_result = analyze_sentiment_stat(analyses)
-complexity_stat = [analyze_poem_complexity(poem) for poem in poems]
 
 # Display results (TODO visualize)
-generate_word_cloud(poems)
+# generate_word_cloud(poems)
 visualize_wordcount_stat(wordcount_stat)
 visualize_sentiment_stat(sentiment_result)
-visualize_complexity_stats(complexity_stat)
 print("Statistical Analysis of Poem Word Counts:")
 print(wordcount_stat)
 print(sentiment_result)
