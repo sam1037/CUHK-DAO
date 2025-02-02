@@ -1,6 +1,6 @@
 import os
 import json
-from src.imageGeneration.imgGen import generatePoemImage
+from imageGeneration.imgGen import generatePoemImage
 import asyncio
 
 def loadPoemData():
@@ -26,7 +26,8 @@ def loadPoemData():
 
 async def main():
     poems = loadPoemData() # a list of poem obj
-    firstPoemObj = poems[1]
-    await generatePoemImage(firstPoemObj, "2ndImage")
+    for poem in poems[::5]:
+        await generatePoemImage(poem, f"generatedImage/{poem['title']}")
+    
 
 asyncio.run(main())
