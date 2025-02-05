@@ -7,6 +7,7 @@ import jieba
 from collections import Counter
 from snownlp import SnowNLP
 from wordingComplexity import analyze_poem_complexity, visualize_complexity_stats
+import pandas as pd
 
 # function to get basic info of a poem
 def analyze_poem(poem):
@@ -238,6 +239,40 @@ def loadPoemData():
 
     return poems
 
+
+# Function to generate a correlation matrix between sentiment, word_count, and wordingComplexity
+# Haven't complete 
+
+def generate_correlation_matrix(analysed_poems, complexity_stat):
+    # Extract the necessary data: sentiment, word count, and wording complexity
+    sentiments = [poem['sentiment'] for poem in analysed_poems]
+    word_counts = [poem['chars_no_punct'] for poem in analysed_poems]
+    wording_complexity = [complexity['wordingComplexity'] for complexity in complexity_stat]
+
+    # Create a DataFrame
+    df = pd.DataFrame({
+        'Sentiment': sentiments,
+        'Word Count': word_counts,
+        'Wording Complexity': wording_complexity
+    })
+
+    # Compute the correlation matrix
+    correlation_matrix = df.corr()
+
+    # Plot the correlation matrix using matplotlib
+    plt.figure(figsize=(8, 6))
+    plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='none')
+    plt.colorbar()
+    plt.xticks(range(len(correlation_matrix)), correlation_matrix.columns, fontsize=12)
+    plt.yticks(range(len(correlation_matrix)), correlation_matrix.columns, fontsize=12)
+    plt.title('Correlation Matrix', fontsize=15)
+
+    for i in range(len(correlation_matrix)):
+        for j in range(len(correlation_matrix)):
+            plt.text(j, i, f'{correlation_matrix.iloc[i, j]:.2f}', ha='center', va='center', color='black')
+
+    plt.show()
+
 # main part
 poems = loadPoemData()
 print(f"Loaded {len(poems)} poems.")
@@ -247,6 +282,10 @@ wordcount_stat = analyze_wordcount_stat(analyses)
 sentiment_result = analyze_sentiment_stat(analyses)
 complexity_stat = [analyze_poem_complexity(poem) for poem in poems]
 
+# Plot the correlation_matrix
+generate_correlation_matrix(analyses, complexity_stat)
+
+
 # Display results (TODO visualize)
 generate_word_cloud(poems)
 visualize_wordcount_stat(wordcount_stat)
@@ -255,4 +294,3 @@ visualize_complexity_stats(complexity_stat)
 print("Statistical Analysis of Poem Word Counts:")
 print(wordcount_stat)
 print(sentiment_result)
-
