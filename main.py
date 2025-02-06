@@ -2,6 +2,7 @@ import json
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 from wordcloud import WordCloud
 import jieba
 from collections import Counter
@@ -240,8 +241,8 @@ def loadPoemData():
     return poems
 
 
-# Function to generate a correlation matrix between sentiment, word_count, and wordingComplexity
-# Haven't complete 
+# This function is to generate a correlation matrix between sentiment, word_count, and wordingComplexity
+# completed 
 
 def generate_correlation_matrix(analysed_poems, complexity_stat):
     # Extract the necessary data: sentiment, word count, and wording complexity
@@ -273,6 +274,161 @@ def generate_correlation_matrix(analysed_poems, complexity_stat):
 
     plt.show()
 
+# This Function is to generate the heat map of sentiment
+# Not completed
+
+def generate_sentiment_heatmap_onebyone(poems):
+    # Ensure poems are analyzed and have 'sentiment' key
+    analyzed_poems = [analyze_poem(poem) for poem in poems]
+    
+    # Proceed only if there are poems to plot
+    if not analyzed_poems:
+        print("No poems to plot.")
+        return
+
+    poem_sentiments = [(poem['title'], poem['sentiment']) for poem in analyzed_poems]
+    sentiment_df = pd.DataFrame(poem_sentiments, columns=['Poem Title', 'Sentiment'])
+    sentiment_df = sentiment_df.sort_values(by='Sentiment', ascending=False)
+
+    # Set the font properties for Chinese characters
+    font_path = "Noto_Sans_TC/static/NotoSansTC-Black.ttf"  # Adjust font path if necessary
+    prop = fm.FontProperties(fname=font_path)
+
+    # Set up the figure size
+    plt.figure(figsize=(12, 8))  # Increase figure size
+    heatmap_data = [sentiment_df['Sentiment'].values]  # Values for the heatmap
+
+    # Display the heatmap with vertical orientation (columns for each sentiment)
+    plt.imshow(heatmap_data, cmap='RdYlGn', aspect='auto', interpolation='nearest')
+
+    # Display color bar for sentiment values
+    plt.colorbar(label='Sentiment Score')
+
+    # Apply the Chinese-compatible font to the x-axis labels (poem titles)
+    plt.xticks(ticks=np.arange(len(sentiment_df)), labels=sentiment_df['Poem Title'], rotation=90, fontsize=8, fontproperties=prop)
+    plt.yticks([])  # No y-axis labels needed since we're only showing sentiment scores in vertical bars
+
+    # Add numerical values inside the heatmap bars (sentiment scores)
+    for i in range(len(sentiment_df)):
+        plt.text(i, 0, f'{sentiment_df["Sentiment"].iloc[i]:.2f}', ha='center', va='center', fontsize=10, color='black', fontproperties=prop)
+
+    # Add title and labels to the plot
+    plt.title('Sentiment Scores Heatmap for Poems', fontsize=16, fontproperties=prop)
+    plt.xlabel('Poem Title', fontsize=12, fontproperties=prop)
+
+    plt.tight_layout()  # Ensure tight layout to prevent overlap
+    plt.show()
+
+# This Function is to generate issue * #poem heat map
+from matplotlib import font_manager as fm
+from collections import defaultdict
+
+def generate_sentiment_heatmap_by_issue(poems):
+    # Analyze poems to get sentiment scores
+    analyzed_poems = [analyze_poem(poem) for poem in poems]
+    if not analyzed_poems:
+        print("No poems to plot.")
+        return
+
+    # Group poems by issue number and sort by sentiment
+    grouped_poems = defaultdict(list)
+    for poem in analyzed_poems:
+        issue = poem.get('issueNumber', None)  # Use .get() to avoid KeyError
+        if issue is None:
+            continue  # Skip poems without an issue number
+        grouped_poems[issue].append({
+            'title': poem['title'],
+            'sentiment': poem['sentiment']
+        })
+
+    # Sort poems in each issue by sentiment (descending)
+    for issue in grouped_poems:
+        grouped_poems[issue].sort(key=lambda x: x['sentiment'], reverse=True)
+
+    # Get the list of available issues
+    available_issues = sorted(grouped_poems.keys())
+    num_issues = len(available_issues)
+
+    # Prepare heatmap data
+    max_poems_per_issue = max(len(v) for v in grouped_poems.values()) if grouped_poems else 0
+    heatmap_data = np.full((max_poems_per_issue, num_issues), np.nan)  # Dynamic number of columns based on available issues
+
+    # Fill data into the heatmap matrix
+    for col, issue in enumerate(available_issues):
+        poems_in_issue = grouped_poems.get(issue, [])
+        for row in range(len(poems_in_issue)):
+            heatmap_data[row, col] = poems_in_issue[row]['sentiment']
+
+    # Set up visualization
+    plt.figure(figsize=(20, 10))
+    cmap = plt.cm.RdYlGn
+    cmap.set_bad('white')  # Handle NaN values
+
+    # Create heatmap
+    plt.imshow(heatmap_data, cmap=cmap, aspect='auto', interpolation='nearest')
+
+    # Customize axes
+    plt.xticks(ticks=np.arange(num_issues), labels=[str(issue) for issue in available_issues], rotation=90, fontsize=8)
+    plt.yticks(ticks=np.arange(max_poems_per_issue), labels=np.arange(1, max_poems_per_issue+1), fontsize=8)
+    plt.xlabel("Issue Number", fontsize=12)
+    plt.ylabel("Poem Index in Issue (Sorted by Sentiment)", fontsize=12)
+
+    # Add color bar and title
+    plt.colorbar(label='Sentiment Score')
+    plt.title("Sentiment Distribution Across Issues", fontsize=16)
+
+    # Add sentiment values as text annotations
+    for row in range(max_poems_per_issue):
+        for col in range(num_issues):
+            val = heatmap_data[row, col]
+            if not np.isnan(val):
+                plt.text(col, row, f'{val:.2f}', ha='center', va='center', 
+                        fontsize=6, color='black')
+
+    plt.tight_layout()
+    plt.show()
+
+
+# This Function is to generate the barchart of top20_sentiment
+def generate_sentiment_barchart_top20(poems):
+    analyzed_poems = [analyze_poem(poem) for poem in poems]
+    
+    # Proceed only if there are poems to plot
+    if not analyzed_poems:
+        print("No poems to plot.")
+        return
+
+    poem_sentiments = [(poem['title'], poem['sentiment']) for poem in analyzed_poems]
+    sentiment_df = pd.DataFrame(poem_sentiments, columns=['Poem Title', 'Sentiment'])
+    
+    # Sort the DataFrame by sentiment score and select top 20
+    sentiment_df = sentiment_df.sort_values(by='Sentiment', ascending=False).head(20)
+
+    # Set the font properties for Chinese characters
+    font_path = "Noto_Sans_TC/static/NotoSansTC-Black.ttf"  # Adjust font path if necessary
+    prop = fm.FontProperties(fname=font_path)
+
+    # Set up the figure size for the bar chart
+    plt.figure(figsize=(8,6))  # Set appropriate figure size for the bar chart
+
+    # Create the bar chart
+    plt.bar(sentiment_df['Poem Title'], sentiment_df['Sentiment'], color='skyblue')
+
+    # Apply the Chinese-compatible font to the x-axis labels (poem titles)
+    plt.xticks(ticks=np.arange(len(sentiment_df)), labels=sentiment_df['Poem Title'], fontsize=8, fontproperties=prop, rotation=90)
+
+    # Add numerical values on top of the bars (sentiment scores)
+    for i, sentiment in enumerate(sentiment_df['Sentiment']):
+        plt.text(i, sentiment + 0.01, f'{sentiment:.2f}', ha='center', va='bottom', fontsize=8, color='black', fontproperties=prop)
+
+    # Add title and labels to the plot
+    plt.title('Sentiment Scores for Top 20 Poems', fontsize=16, fontproperties=prop)
+    plt.xlabel('Poem Title', fontsize=12, fontproperties=prop)
+    plt.ylabel('Sentiment Score', fontsize=12, fontproperties=prop)
+
+    plt.tight_layout()  # Ensure tight layout to prevent overlap
+    plt.show()
+
 # main part
 poems = loadPoemData()
 print(f"Loaded {len(poems)} poems.")
@@ -285,6 +441,12 @@ complexity_stat = [analyze_poem_complexity(poem) for poem in poems]
 # Plot the correlation_matrix
 generate_correlation_matrix(analyses, complexity_stat)
 
+# Plot the heatmap of poems
+generate_sentiment_heatmap_onebyone(poems)
+generate_sentiment_heatmap_by_issue(poems)
+generate_sentiment_barchart_top20(poems)
+
+
 
 # Display results (TODO visualize)
 generate_word_cloud(poems)
@@ -294,3 +456,4 @@ visualize_complexity_stats(complexity_stat)
 print("Statistical Analysis of Poem Word Counts:")
 print(wordcount_stat)
 print(sentiment_result)
+
