@@ -1,10 +1,11 @@
 import os
 import json
 import random
+import numpy as np
 import jieba
 from collections import Counter
 import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
+import matplotlib.font_manager as fm
 from loadChinCommonWords import load_common_words
 import pandas as pd
 import plotly.express as px
@@ -47,55 +48,45 @@ def analyze_poem_complexity(poem):
         'wordingComplexity': round(wordingComplexity, 2)
     }
 
-# Visualize the complexity stats with a horizontal bar chart
+# visulize the wording complexity with a horizontal barchart with matplotlib
 def visualize_complexity_stats(complexity_stats):
-    titles = [stat['title'] for stat in complexity_stats]
-    wordingComplexity = [stat['wordingComplexity'] for stat in complexity_stats]
+    # setup the dataframe
+    limit = 20
+    complexityDF = pd.DataFrame(complexity_stats, columns=['title', 'wordingComplexity'])
+    complexityDF = complexityDF.sort_values(by='wordingComplexity', ascending=True).tail(limit)
 
-    # Combine titles and wording complexity into a list of tuples and sort by wording complexity
-    sorted_stats = sorted(zip(wordingComplexity, titles)) #? zip?
+    # Set the font properties for Chinese characters
+    font_path = "Noto_Sans_TC/static/NotoSansTC-Black.ttf"
+    prop = fm.FontProperties(fname=font_path)
 
-    # limit the number of poems to display
-    sorted_stats = sorted_stats[:10000]
+    # setup the plot with matplotlib
+    plt.figure(figsize=(10,8))
+    bars = plt.barh(complexityDF['title'], complexityDF['wordingComplexity'], color='skyblue')
+    # Apply Chinese-compatible font to y-axis labels (poem titles)
+    plt.yticks(ticks=np.arange(len(complexityDF)), 
+              labels=complexityDF['title'], 
+              fontsize=8, 
+              fontproperties=prop)
 
-    # Unzip the sorted list
-    sorted_wordingComplexity, sorted_titles = zip(*sorted_stats)
+    # Add numerical values at the end of each bar
+    for i, bar in enumerate(bars):
+        width = bar.get_width()
+        plt.text(width + 0.01,  # Slightly offset from end of bar
+                bar.get_y() + bar.get_height()/2,  # Centered vertically
+                f'{width:.2f}',
+                ha='left',
+                va='center',
+                fontsize=8)
 
-    # Create a DataFrame for Plotly
-    df = pd.DataFrame({
-        'Poem Titles': sorted_titles,
-        'Wording Complexity': sorted_wordingComplexity
-    })
+    # Add title and labels
+    plt.title(f'Wording Complexity for Top {limit} Poems', fontsize=16, fontproperties=prop)
+    plt.xlabel('Complexity Score (higher more complex)', fontsize=12, fontproperties=prop)
+    plt.ylabel('Poem Title', fontsize=12, fontproperties=prop)
 
-    # Create the interactive bar chart
-    fig = px.bar(df, x='Wording Complexity', y='Poem Titles', orientation='h',
-                 title='Wording Complexity of the Chinese Modern Verses')
+    # Add grid for better readability
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
 
-    # Define the click event
-    def on_click(trace, points, state):
-        for i in points.point_inds:
-            title = df.iloc[i]['Poem Titles']
-            # Open the corresponding poem (assuming you have a function to get the poem content)
-            print(f"Title: {title}")
-            # Optionally, open the poem in a web browser or display it in another way
-            # webbrowser.open(f'path/to/poems/{title}.html')
-
-    fig.data[0].on_click(on_click)
-
-    fig.show()
-
-    #this part is visualizing the data with matplotlib, now trying to use plotly to make it interactive
-    """
-    font_path = r"Noto_Sans_TC/static/NotoSansTC-Black.ttf"
-    font_prop = FontProperties(fname=font_path)
-
-    plt.figure(figsize=(10, 8))
-    plt.barh(sorted_titles, sorted_wordingComplexity, color='blue')
-    plt.title('Wording Complexity of the Chinese Modern Verses', fontproperties=font_prop)
-    plt.xlabel('Wording Complexity (higher more complex)', fontproperties=font_prop)
-    plt.ylabel('Poem Titles', fontproperties=font_prop)
-    plt.xticks(fontproperties=font_prop)
-    plt.yticks(fontproperties=font_prop)
-    plt.tight_layout()
+    plt.tight_layout()  # Ensure tight layout to prevent overlap
     plt.show()
-    """
+
+    return

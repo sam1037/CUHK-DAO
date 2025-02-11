@@ -161,7 +161,6 @@ def generate_word_cloud(poems):
     plt.axis('off')
     plt.show()
 
-#TODO: wording complexity analysis
 
 # this function is to do topic modeling, developing, not completed
 def topic_modeling(poems):
@@ -199,27 +198,7 @@ def topic_modeling(poems):
         print(f'Topic {idx + 1}:')
         print(topic)
 
-# function to load data
-'''
-def loadPoemData():
-    # Read all JSON files from the data folder
-    poems = []
-    data_folder = 'data'
-
-    for filename in os.listdir(data_folder):
-        #print(filename)
-        if filename.endswith('.json'):
-            file_path = os.path.join(data_folder, filename)
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    #print(f.read())
-                    poems.append(json.load(f))
-            except Exception as e:
-                print(f"Unexpected error with file: {filename} - {e}")
-
-    return poems
-'''
-
+# load the poems, return a list of poem obj representing by dictionaries
 def loadPoemData():
     # Initialize a list to store poems
     poems = []
@@ -257,12 +236,14 @@ def generate_correlation_matrix(analysed_poems, complexity_stat):
         'Wording Complexity': wording_complexity
     })
 
+    print(df)
+
     # Compute the correlation matrix
     correlation_matrix = df.corr()
 
     # Plot the correlation matrix using matplotlib
     plt.figure(figsize=(8, 6))
-    plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='none')
+    plt.imshow(correlation_matrix, cmap='RdYlGn', interpolation='none', vmin=-1, vmax=1)
     plt.colorbar()
     plt.xticks(range(len(correlation_matrix)), correlation_matrix.columns, fontsize=12)
     plt.yticks(range(len(correlation_matrix)), correlation_matrix.columns, fontsize=12)
@@ -287,6 +268,7 @@ def generate_sentiment_heatmap_onebyone(poems):
         return
 
     poem_sentiments = [(poem['title'], poem['sentiment']) for poem in analyzed_poems]
+
     sentiment_df = pd.DataFrame(poem_sentiments, columns=['Poem Title', 'Sentiment'])
     sentiment_df = sentiment_df.sort_values(by='Sentiment', ascending=False)
 
@@ -318,6 +300,7 @@ def generate_sentiment_heatmap_onebyone(poems):
 
     plt.tight_layout()  # Ensure tight layout to prevent overlap
     plt.show()
+
 
 # This Function is to generate issue * #poem heat map
 from matplotlib import font_manager as fm
@@ -402,29 +385,38 @@ def generate_sentiment_barchart_top20(poems):
     sentiment_df = pd.DataFrame(poem_sentiments, columns=['Poem Title', 'Sentiment'])
     
     # Sort the DataFrame by sentiment score and select top 20
-    sentiment_df = sentiment_df.sort_values(by='Sentiment', ascending=False).head(20)
+    sentiment_df = sentiment_df.sort_values(by='Sentiment', ascending=True).tail(20)
 
     # Set the font properties for Chinese characters
     font_path = "Noto_Sans_TC/static/NotoSansTC-Black.ttf"  # Adjust font path if necessary
     prop = fm.FontProperties(fname=font_path)
 
     # Set up the figure size for the bar chart
-    plt.figure(figsize=(8,6))  # Set appropriate figure size for the bar chart
+    plt.figure(figsize=(10,8))  # Set appropriate figure size for the bar chart
 
     # Create the bar chart
-    plt.bar(sentiment_df['Poem Title'], sentiment_df['Sentiment'], color='skyblue')
+    bars = plt.barh(sentiment_df['Poem Title'], sentiment_df['Sentiment'], color='skyblue')
 
-    # Apply the Chinese-compatible font to the x-axis labels (poem titles)
-    plt.xticks(ticks=np.arange(len(sentiment_df)), labels=sentiment_df['Poem Title'], fontsize=8, fontproperties=prop, rotation=90)
-
-    # Add numerical values on top of the bars (sentiment scores)
-    for i, sentiment in enumerate(sentiment_df['Sentiment']):
-        plt.text(i, sentiment + 0.01, f'{sentiment:.2f}', ha='center', va='bottom', fontsize=8, color='black', fontproperties=prop)
-
-    # Add title and labels to the plot
+    # Apply Chinese-compatible font to y-axis labels (poem titles)
+    plt.yticks(ticks=np.arange(len(sentiment_df)), 
+              labels=sentiment_df['Poem Title'], 
+              fontsize=8, 
+              fontproperties=prop)
+    
+    # Add numerical values at the end of each bar
+    for i, bar in enumerate(bars):
+        width = bar.get_width()
+        plt.text(width + 0.01,  # Slightly offset from end of bar
+                bar.get_y() + bar.get_height()/2,  # Centered vertically
+                f'{width:.2f}',
+                ha='left',
+                va='center',
+                fontsize=8)
+        
+    # Add title and labels
     plt.title('Sentiment Scores for Top 20 Poems', fontsize=16, fontproperties=prop)
-    plt.xlabel('Poem Title', fontsize=12, fontproperties=prop)
-    plt.ylabel('Sentiment Score', fontsize=12, fontproperties=prop)
+    plt.xlabel('Sentiment Score', fontsize=12, fontproperties=prop)
+    plt.ylabel('Poem Title', fontsize=12, fontproperties=prop)
 
     plt.tight_layout()  # Ensure tight layout to prevent overlap
     plt.show()
@@ -433,14 +425,15 @@ def generate_sentiment_barchart_top20(poems):
 poems = loadPoemData()
 print(f"Loaded {len(poems)} poems.")
 # analyze
-analyses = [analyze_poem(poem) for poem in poems]
+analyses = [analyze_poem(poem) for poem in poems] # a list of dict
+print([p['sentiment'] for p in analyses])
+
 wordcount_stat = analyze_wordcount_stat(analyses)
 sentiment_result = analyze_sentiment_stat(analyses)
 complexity_stat = [analyze_poem_complexity(poem) for poem in poems]
 
 # Plot the correlation_matrix
 generate_correlation_matrix(analyses, complexity_stat)
-
 # Plot the heatmap of poems
 generate_sentiment_heatmap_onebyone(poems)
 generate_sentiment_heatmap_by_issue(poems)
