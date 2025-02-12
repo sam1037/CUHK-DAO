@@ -1,0 +1,1 @@
+Based on the suggestion you made, create a new prompt for image generation of the given chinese modern verse.
