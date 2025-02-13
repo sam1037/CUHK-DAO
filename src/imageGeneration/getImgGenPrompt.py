@@ -1,3 +1,5 @@
+# TODO rename this and refactor, this file is actually generating the image
+
 from poe_api_wrapper import AsyncPoeApi
 from dotenv import load_dotenv
 import os
@@ -6,6 +8,8 @@ from pathlib import Path
 import time
 from imgGen import generatePoemImage, saveImgFromUrl
 from evalResponseParser import parseRegenerate
+import json
+
 
 # get poe api wrapper token
 load_dotenv()
@@ -14,6 +18,7 @@ tokens = {
     'p-lat': os.getenv('p-lat')
 }
 
+# this function is abondoned, don't use
 async def getImgGenPrompt(poemObj):
 
     client = await AsyncPoeApi(tokens=tokens).create()
@@ -104,8 +109,8 @@ async def analysisPoem(poemObj):
     cleanedPoemObj = {'title': poemObj['title'], 'body': '\n'.join(poemObj['body'])}
 
     # get message to feed to LLM
-    templatePath = Path("F:\\fDriveProgramming\\CUHK DAO 311224\\template")
-    file_to_open = templatePath/"analysisPoem.md"
+    templatePath = Path(__file__).parent.parent.parent / "template"
+    file_to_open = templatePath / "analysisPoem.md"
     with open(file_to_open, 'r', encoding='utf-8') as f:
         template = f.read()
     message = template.format(title=cleanedPoemObj['title'], body=cleanedPoemObj['body'])
@@ -125,7 +130,7 @@ async def imgGenPromptGeneration(client, chatId, analysis):
     artstlye = ""
 
     # get message to feed to LLM
-    templatePath = Path("F:\\fDriveProgramming\\CUHK DAO 311224\\template")
+    templatePath = Path(__file__).parent.parent.parent / "template"
     file_to_open = templatePath/"imgGenPromptGeneration.md"
     with open(file_to_open, 'r', encoding='utf-8') as f:
         template = f.read()
@@ -153,11 +158,10 @@ async def imgGenPromptGeneration(client, chatId, analysis):
 
     return imgGenPrompt
 
-
 # function to ask LLM to evaluate the generated image, return if need to regenerate
 async def evaluateImg(client, chatId, imgURL):
     # get message to feed to LLM
-    templatePath = Path("F:\\fDriveProgramming\\CUHK DAO 311224\\template")
+    templatePath = Path(__file__).parent.parent.parent / "template"
     file_to_open = templatePath/"evaluateImg.md"
     with open(file_to_open, 'r', encoding='utf-8') as f:
         template = f.read()
@@ -176,11 +180,10 @@ async def evaluateImg(client, chatId, imgURL):
 
     return parseRegenerate(response), response
 
-
 # function to ask LLM to regenerate the prompt for img gen
 async def imgGenPromptRegenerate(client, chatId, prevRespose):
     # get message to feed to LLM
-    templatePath = Path("F:\\fDriveProgramming\\CUHK DAO 311224\\template")
+    templatePath = Path(__file__).parent.parent.parent / "template"
     file_to_open = templatePath/"imgGenPromptRegeneration.md"
     with open(file_to_open, 'r', encoding='utf-8') as f:
         template = f.read()
@@ -209,8 +212,8 @@ async def imgGenPromptRegenerate(client, chatId, prevRespose):
     return imgGenPrompt
 
 
-async def test():
-    # generate img
+async def generateAndSaveImg(poemObj):
+    # analysis poem, get prompt, generate image
     client, chatId, analysis = await analysisPoem(poemObj)
     imgGenPrompt = await imgGenPromptGeneration(client, chatId, analysis)
     imgURL = await generatePoemImage(imgGenPrompt)
@@ -241,5 +244,27 @@ async def test():
     print("[DEBUG] final image url\n", imgURL)
     saveImgFromUrl(imgURL, f"generatedImages\\testingImages\\{poemObj['title']}.png")
     
+# get a poemObj given its name and issueNumber
+def loadOnePoem(poemName, issueNum):
+    templatePath = Path(__file__).parent.parent.parent / "data" / f"issueNumber{issueNum}"
+    file_to_open = templatePath / f"{poemName}.json"
+    with open(file_to_open, 'r', encoding='utf-8') as f:
+        poemObj = json.load(f)
+    return poemObj
 
-asyncio.run(test())
+
+async def test():
+    # get the poem obj
+    #poemObj = loadOnePoem("偽童話", 45)
+    #poemObj = loadOnePoem("劊子手的長嘆", 15)
+    #poemObj = loadOnePoem("住在精神病院隔壁", 12)
+    #poemObj = loadOnePoem("大家都是殺人犯", 11) # this one will probably regenerate
+    
+    print(poemObj)
+
+    # generate and save img for the given poem
+    await generateAndSaveImg(poemObj)
+
+
+if __name__ == "__main__":
+    asyncio.run(test())

@@ -24,6 +24,7 @@ def loadPoemData():
     return poems
 
 
+# don't use, use the other file instead
 async def main():
     poems = loadPoemData() # a list of poem obj
     for poem in poems[::5]:
