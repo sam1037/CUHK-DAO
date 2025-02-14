@@ -258,7 +258,7 @@ async def test():
     #poemObj = loadOnePoem("偽童話", 45)
     #poemObj = loadOnePoem("劊子手的長嘆", 15)
     #poemObj = loadOnePoem("住在精神病院隔壁", 12)
-    #poemObj = loadOnePoem("大家都是殺人犯", 11) # this one will probably regenerate
+    poemObj = loadOnePoem("大家都是殺人犯", 11) # this one will probably regenerate
     
     print(poemObj)
 
