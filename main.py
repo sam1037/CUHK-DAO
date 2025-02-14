@@ -429,6 +429,7 @@ def generate_sentiment_barchart_top20(poems):
 # main part
 poems = loadPoemData()
 print(f"Loaded {len(poems)} poems.")
+
 # analyze
 analyses = [analyze_poem(poem) for poem in poems] # a list of dict
 print([p['sentiment'] for p in analyses])
@@ -437,21 +438,23 @@ wordcount_stat = analyze_wordcount_stat(analyses)
 sentiment_result = analyze_sentiment_stat(analyses)
 complexity_stat = [analyze_poem_complexity(poem) for poem in poems]
 
-# Plot the correlation_matrix
-generate_correlation_matrix(analyses, complexity_stat)
-# Plot the heatmap of poems
-generate_sentiment_heatmap_onebyone(poems)
-generate_sentiment_heatmap_by_issue(poems)
+#Visulization (word count, sent, complexity, word cloud, corr. matrix)
+visualize_wordcount_stat(wordcount_stat)
+visualize_sentiment_stat(sentiment_result)
 generate_sentiment_barchart_top20(poems)
+visualize_complexity_stats(complexity_stat)
+
+generate_word_cloud(poems)
+generate_correlation_matrix(analyses, complexity_stat)
+
+
+# Plot the heatmap of poems
+# generate_sentiment_heatmap_onebyone(poems) #need fix
+# generate_sentiment_heatmap_by_issue(poems) #need fix
 
 
 
 # Display results (TODO visualize)
-generate_word_cloud(poems)
-visualize_wordcount_stat(wordcount_stat)
-visualize_sentiment_stat(sentiment_result)
-visualize_complexity_stats(complexity_stat)
-print("Statistical Analysis of Poem Word Counts:")
-print(wordcount_stat)
-print(sentiment_result)
-
+# print("Statistical Analysis of Poem Word Counts:")
+# print(wordcount_stat)
+#print(sentiment_result)
