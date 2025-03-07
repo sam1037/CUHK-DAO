@@ -1,5 +1,6 @@
 import os
 import json
+import Path
 
 #load the poems, return a list of poem obj representing by dictionaries
 def loadAllPoemData():
@@ -21,3 +22,11 @@ def loadAllPoemData():
                     print(f"Unexpected error with file: {file_path} - {e}")
 
     return poems
+
+# get a poemObj given its name and issueNumber
+def loadOnePoem(poemName, issueNum):
+    templatePath = Path(__file__).parent.parent / "data" / f"issueNumber{issueNum}"
+    file_to_open = templatePath / f"{poemName}.json"
+    with open(file_to_open, 'r', encoding='utf-8') as f:
+        poemObj = json.load(f)
+    return poemObj
