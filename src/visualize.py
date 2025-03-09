@@ -10,6 +10,7 @@ from snownlp import SnowNLP
 from analysis import analyze_poem_complexity, visualize_complexity_stats
 import pandas as pd
 from analysis import analyze_poem
+from analysis import calculate_avg_sentiment_per_author
 
 
 # function to visualize the word count stat: freq dist and box diagrams
@@ -366,4 +367,158 @@ def generate_sentiment_barchart_top20(poems):
     plt.ylabel('Poem Title', fontsize=12, fontproperties=prop)
 
     plt.tight_layout()  # Ensure tight layout to prevent overlap
+    plt.show()
+
+# Author Poem CDF
+def plot_author_poem_cdf(poems):
+
+    # Set Chinese font
+    font_path = "Noto_Sans_TC/static/NotoSansTC-Black.ttf"  # Ensure the path is correct
+    font_prop = fm.FontProperties(fname=font_path)
+
+    # Count the number of poems per author
+    author_counts = Counter(poem['author'] for poem in poems)
+
+    # Calculate the cumulative distribution
+    max_poems = 10  # Maximum number of poems
+    cdf = []  # Cumulative distribution values
+    for x in range(1, max_poems + 1):
+        count = sum(1 for count in author_counts.values() if count >= x)
+        cdf.append(count)
+
+    # Create a horizontal bar chart
+    plt.figure(figsize=(10, 6))
+    
+    # Adjust y-values so that 1 is at the top and 10 is at the bottom
+    y_values = range(max_poems, 0, -1)  # From 10 to 1  
+    bars = plt.barh(y_values, cdf, color='skyblue')  
+
+    # Set y-axis labels (from 1 to 10)
+    plt.yticks(ticks=range(max_poems, 0, -1), labels=range(1, max_poems + 1), fontproperties=font_prop)  
+
+    # Add title and labels
+    plt.title('Cumulative Distribution of the Number of Poems per Author', fontsize=16, fontproperties=font_prop)
+    plt.xlabel('Number of Authors', fontsize=12, fontproperties=font_prop)
+    plt.ylabel('Number of Poems (≥ x)', fontsize=12, fontproperties=font_prop)
+
+    # Display the count on the right side of each bar
+    for bar in bars:
+        width = bar.get_width()
+        plt.text(width + 0.5,  # Position of the count value
+                 bar.get_y() + bar.get_height() / 2,  # Centered vertically
+                 f'{int(width)}',  # Display integer
+                 ha='left',  # Horizontal alignment
+                 va='center',  # Vertical alignment
+                 fontsize=10,  # Font size
+                 fontproperties=font_prop)
+
+    # Display the chart
+    plt.tight_layout()
+    plt.show()
+
+# poem count of top n author
+# Generate a horizontal bar chart for the top N authors with the most poems.
+
+def generate_top_author_count_barchart(poems, top_n=23):
+
+    # Set Chinese font
+    font_path = "Noto_Sans_TC/static/NotoSansTC-Black.ttf"  # Ensure the path is correct
+    font_prop = fm.FontProperties(fname=font_path)
+
+    # Count the number of poems per author
+    author_counts = Counter(poem['author'] for poem in poems)
+
+    # Sort authors by poem count in descending order and select the top N
+    sorted_authors = sorted(author_counts.keys(), key=lambda x: author_counts[x], reverse=True)[:top_n]
+    sorted_counts = [author_counts[author] for author in sorted_authors]
+
+    # Reverse the order to have the largest at the top and the smallest at the bottom
+    sorted_authors = sorted_authors[::-1]  # Reverse the list
+    sorted_counts = sorted_counts[::-1]  # Reverse the list
+
+    # Create a horizontal bar chart
+    plt.figure(figsize=(10, top_n * 0.5))  # Adjust height based on the number of authors
+    bars = plt.barh(sorted_authors, sorted_counts, color='skyblue')
+
+    # Set Chinese font for y-axis labels
+    plt.yticks(fontproperties=font_prop)
+    plt.xticks(fontproperties=font_prop)
+
+    # Add title and labels
+    plt.title(f'Top {top_n} Authors by Number of Poems', fontsize=16, fontproperties=font_prop)
+    plt.xlabel('Number of Poems', fontsize=12, fontproperties=font_prop)
+    plt.ylabel('Author', fontsize=12, fontproperties=font_prop)
+
+    # Display the count on the right side of each bar
+    for bar in bars:
+        width = bar.get_width()
+        plt.text(width + 0.5,  # Position of the count value
+                 bar.get_y() + bar.get_height() / 2,  # Centered vertically
+                 f'{int(width)}',  # Display integer
+                 ha='left',  # Horizontal alignment
+                 va='center',  # Vertical alignment
+                 fontsize=10,  # Font size
+                 fontproperties=font_prop)
+
+    # Display the chart
+    plt.tight_layout()
+    plt.show()
+
+# average sentiment score of n author 
+# Generate a horizontal bar chart for average sentiment score of the top N authors with the most poems.
+
+def generate_top_author_sentiment_barchart(poems, top_n=23):
+    """
+    Generate a horizontal bar chart for the sentiment scores of the top N authors with the most poems.
+    The sentiment axis ranges from 0 to 1.
+    :param poems: List of poem data (each element is a dictionary containing 'author' and 'body' fields)
+    :param top_n: Number of top authors to display (default is 23)
+    """
+    # Set Chinese font
+    font_path = "Noto_Sans_TC/static/NotoSansTC-Black.ttf"  # Ensure the path is correct
+    font_prop = fm.FontProperties(fname=font_path)
+
+    # Count the number of poems per author
+    author_counts = Counter(poem['author'] for poem in poems)
+
+    # Calculate the average sentiment score per author
+    avg_sentiments = calculate_avg_sentiment_per_author(poems)
+
+    # Sort authors by poem count in descending order and select the top N
+    sorted_authors = sorted(author_counts.keys(), key=lambda x: author_counts[x], reverse=True)[:top_n]
+    sorted_sentiments = [avg_sentiments.get(author, 0) for author in sorted_authors]  # Default to 0 if no sentiment data
+
+    # Reverse the order to have the largest at the top and the smallest at the bottom
+    sorted_authors = sorted_authors[::-1]  # Reverse the list
+    sorted_sentiments = sorted_sentiments[::-1]  # Reverse the list
+
+    # Create a horizontal bar chart
+    plt.figure(figsize=(10, top_n * 0.5))  # Adjust height based on the number of authors
+    bars = plt.barh(sorted_authors, sorted_sentiments, color='orange')
+
+    # Set Chinese font for y-axis labels
+    plt.yticks(fontproperties=font_prop)
+    plt.xticks(fontproperties=font_prop)
+
+    # Add title and labels
+    plt.title(f'Sentiment Scores of Top {top_n} Authors by Poem Count', fontsize=16, fontproperties=font_prop)
+    plt.xlabel('Average Sentiment Score (0 to 1)', fontsize=12, fontproperties=font_prop)
+    plt.ylabel('Author', fontsize=12, fontproperties=font_prop)
+
+    # Set x-axis limit to 0-1
+    plt.xlim(0, 1)
+
+    # Display the sentiment score on the right side of each bar
+    for bar in bars:
+        width = bar.get_width()
+        plt.text(width + 0.02,  # Position of the sentiment value (slightly offset)
+                 bar.get_y() + bar.get_height() / 2,  # Centered vertically
+                 f'{width:.2f}',  # Display float with 2 decimal places
+                 ha='left',  # Horizontal alignment
+                 va='center',  # Vertical alignment
+                 fontsize=10,  # Font size
+                 fontproperties=font_prop)
+
+    # Display the chart
+    plt.tight_layout()
     plt.show()

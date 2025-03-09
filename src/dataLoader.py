@@ -1,6 +1,8 @@
+# file for loading data
+
 import os
 import json
-import Path
+from pathlib import Path
 
 #load the poems, return a list of poem obj representing by dictionaries
 def loadAllPoemData():
