@@ -1,0 +1,29 @@
+{
+    "text": [
+        "flannel", "gpt4_o", "emotive", "gemini_2_flash", "grok2", 
+        "claude_3_igloo", "gemini_1_5_pro", "claude_3_5_firefly", 
+        "gpt_o1", "gpt4_o_latest", "gpt_o3_mini", "gemini_1_5_flash", 
+        "gpt4_o_mini", "flannel_reasoning", "deepseekr1fw", 
+        "claude_2_1_cedar", "llama3170b", "llama31405b", "grokbeta", 
+        "llama31nemotron", "claude_2_1_bamboo", "claude_3_haiku", 
+        "llama318b", "gemini_1_5_flash_128k", "gemini_1_5_pro_128k", 
+        "gemini_1_5_flash_1m", "gemini_1_5_pro_1m", "gpt4_o_mini_128k", 
+        "gpt4_o_128k", "gpt4_o_latest_128k", "beaver", 
+        "claude_3_5_sonnet_20240620", "chinchilla", "vizcacha", 
+        "claude_3_igloo_200k", "claude_3_5_firefly_200k", 
+        "claude_3_5_sonnet_20240620_200k", "claude_3_sonnet_200k", 
+        "claude_3_haiku_200k", "claude_3_opus_200k", "mixtral8x7bchat", 
+        "gpt4_o_2024_08_06", "gpt4_o_2024_08_06_128k", "mythomaxl213b", 
+        "grokbeta128k", "a2_2", "claude_2_short"
+    ],
+    "image": [
+        "fluxpro11ultra", "imagen3", "fluxpro11", "playgroundv3", 
+        "imagen3fast", "ideogramv2", "fluxpro", "fluxschnell", 
+        "fluxdev", "ideogram", "playgroundv25", "dalle3", 
+        "recraftv3", "sd3turbo", "stablediffusion3", "stablediffusionxl", 
+        "ideogramv2aturbo", "ideogramv2a"
+    ],
+    "video": [
+        "runway", "dreammachine", "pika20", "pika10"
+    ]
+}
