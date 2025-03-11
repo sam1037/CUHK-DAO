@@ -7,10 +7,9 @@ import asyncio
 from pathlib import Path
 import time
 from imgGen import generatePoemImage, saveImgFromUrl
-from evalResponseParser import parseRegenerate
+from utils import parseRegenerate, cleanReasoningLLMResponse
 import json
 from imgEvaluator import thirdPartyEvaluateImg, regenSuggestion
-
 
 # get poe api wrapper token
 load_dotenv()
@@ -80,7 +79,7 @@ async def analysisPoem(poemObj, model = "gemini_2_0_flash"):
 
     return client, chatId, analysis
 
-# function to ask LLM to create prompt for img gen, return the prompt
+# function to ask LLM to create prompt for img gen, clean it, then return the prompt
 async def imgGenPromptGeneration(client, chatId, analysis, model = "gemini_2_0_flash"):
     artstlye = ""
 
@@ -108,8 +107,11 @@ async def imgGenPromptGeneration(client, chatId, analysis, model = "gemini_2_0_f
         print(previous_messages, type(previous_messages))
         imgGenPrompt = previous_messages[0]["text"]
 
+    print("\n[DEBUG] imgGenPrompt b4 cleaning: \n", imgGenPrompt) #debug
 
-    print("\n[DEBUG] imgGenPrompt: \n", imgGenPrompt) #debug
+    # clean it (format is messy if the model is a reasoning model)
+    imgGenPrompt = cleanReasoningLLMResponse(imgGenPrompt)
+    print("\n[DEBUG] imgGenPrompt after cleaning: \n", imgGenPrompt) #debug
 
     return imgGenPrompt
 

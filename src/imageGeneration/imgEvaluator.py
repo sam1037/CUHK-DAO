@@ -6,7 +6,7 @@ import asyncio
 from dotenv import load_dotenv
 import os
 from pathlib import Path
-from evalResponseParser import parseRegenerate
+from utils import parseRegenerate
 import time
 
 # get poe api wrapper token
