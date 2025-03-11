@@ -27,7 +27,7 @@ def saveImgFromUrl(url, filename):
 
 # don't use, use the other file instead
 # return the url of the generated image
-async def generatePoemImage(prompt):
+async def generatePoemImage(prompt, model = "playgroundv3"):
     print("DEBUG: generating image")
     # get img gen prompt
     message = prompt
@@ -35,7 +35,7 @@ async def generatePoemImage(prompt):
     # generate image from prompt
     client = await AsyncPoeApi(tokens=tokens).create()
     finalChunk = None
-    async for chunk in client.send_message(bot="imagen3", message=message):
+    async for chunk in client.send_message(bot=model, message=message):
         finalChunk = chunk
     print("DEBUG: generated image")
     #return url of the generated image

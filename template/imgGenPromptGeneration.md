@@ -5,8 +5,4 @@ Choose an art style suitable for the poem and specify it in the prompt.
 Length Requirements:
 - Maximum 100 words
 
-Appropriateness requirements:
-- No disturbing/creepy elements
-- No inappropriate content
-
-**Format your response as a single, coherent prompt paragraph. No irrelevant sentences should be included.**
+**Format your response as a single, coherent prompt paragraph. No irrelevant sentences should be included. So do not respond like "Okay, the prompt for image generation is as follow: {{the actual prompt}}", instead respond "{{the actual prompt}}" directly**.

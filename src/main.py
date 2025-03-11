@@ -13,7 +13,7 @@ sentiment_result = analyze_sentiment_stat(analysed_poems)
 complexity_stat = [analyze_poem_complexity(poem) for poem in poems]
 total_poems = count_total_poems(poems)
 
-
+# Visulization
 # The total number of poem 
 print(f"There are a total of {total_poems} poems.")
 
@@ -39,6 +39,7 @@ generate_top_author_count_barchart(poems, top_n=23)
 
 # average sentiment score of poem count of top n author
 generate_top_author_sentiment_barchart(poems, top_n=23)
+
 
 # Checking: Input author name, output each poems with issue number and sentiment score 
 poem_sentiments = get_poem_sentiments_by_author(poems, "王心怡")

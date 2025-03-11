@@ -1,3 +1,5 @@
+import re
+
 class RegenerateParseError(Exception):
     """Custom exception for regenerate parsing errors"""
     pass
@@ -7,46 +9,67 @@ def parseRegenerate(text):
     if not text:
         raise RegenerateParseError("Input text cannot be empty or None")
     
-    # Get last line only
-    last_line = text.split('\n')[-1].strip()
+    # Split text into lines and filter out truly non-empty lines after stripping
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    if not lines:
+        raise RegenerateParseError("No non-empty lines found in input")
     
-    # Check format
-    if not last_line.startswith('Regenerate:'):
-        raise RegenerateParseError("First line must start with 'Regenerate:'")
+    # Pattern to match various formats of the regenerate directive
+    # This covers:
+    # - Regenerate: YES/NO
+    # - Regenerate: **YES/NO**
+    # - **Regenerate: YES/NO**
+    pattern = re.compile(r'(?:\*\*)?\s*Regenerate:\s*(?:\*\*)?\s*(\*\*)?([A-Za-z]+)(?:\*\*)?', re.IGNORECASE)
     
-    # Extract and validate value
-    value = last_line.replace('Regenerate:', '').strip().upper()
-    if value not in ['YES', 'NO']:
-        raise RegenerateParseError("Value after 'Regenerate:' must be 'YES' or 'NO'")
+    # Search all lines
+    for line in lines:
+        match = pattern.search(line)
+        if match:
+            # Extract the value (group 2 is the actual YES/NO value)
+            value = match.group(2).upper().strip()
+            
+            # Validate the value
+            if value in ['YES', 'NO']:
+                return value == 'YES'
+            else:
+                raise RegenerateParseError(f"Value after 'Regenerate:' must be 'YES' or 'NO', got '{value}'")
     
-    return value == 'YES'
+    # If no valid "Regenerate:" line is found, raise an error
+    raise RegenerateParseError("No valid 'Regenerate:' line found in the input")
 
 
+def test():
+    # Example tests (commented out)
+    # Test examples
+    test_strings = [
+        # Valid cases
+        '''Regenerate: NO''',
+        '''Regenerate: **NO**''',
+        
+        '''Some intro text.
+    Regenerate: YES
+    Additional text.''',
+        
+        '''**Regenerate: YES**''',
+        
+        '''Some text
+    **Regenerate: NO**
+    Extra text''',
+        
+        # Error cases
+        '',  # empty string
+        'Wrong format',  # wrong format
+        'Regenerate: MAYBE'  # invalid value
+    ]
 
-"""
-# Test examples
-test_strings = [
-    # Valid cases
-    '''Regenerate: NO
-    The image effectively captures...''',
-    
-    '''Regenerate: YES
-    Some immediate content without empty line''',
-    
-    # Error cases
-    '',  # empty string
-    'Wrong format',  # wrong format
-    'Regenerate: MAYBE'  # invalid value
-]
+    for i, test in enumerate(test_strings):
+        print(f"Test case {i+1}:")
+        try:
+            result = parseRegenerate(test)
+            print("Result:", result, "\n")
+        except RegenerateParseError as e:
+            print("Error:", str(e), "\n")
 
 
-for test in test_strings:
-    try:
-        result = parse_regenerate(test)
-        print("Input first line:", repr(test.split('\n')[0]))
-        print("Result:", result, "\n")
-    except RegenerateParseError as e:
-        print("Error for input", repr(test.split('\n')[0]))
-        print("Error message:", str(e), "\n")
-
-"""
+if __name__ == "__main__":
+    test()

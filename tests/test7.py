@@ -1,9 +1,9 @@
 # helper.py
-import main  # Import main.py
+import oldmain  # Import main.py
 
 def print_poem_statistics():
     # Call the main function to get results
-    sentiment_result, wordcount_stat, complexity_stat = main.main()  # Call main function from main.py
+    sentiment_result, wordcount_stat, complexity_stat = oldmain.main()  # Call main function from main.py
 
     # Print Sentiment values
     print("Sentiment Values for each poem:")
