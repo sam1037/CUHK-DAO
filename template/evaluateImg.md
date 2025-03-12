@@ -1,4 +1,4 @@
-**Evaluate the generated image based on the appropriateness, key elements, semantics, core message, and the technical quality of the chinese modern poem.**
+**Evaluate the generated image based on the matchingness with the key elements, semantics, core message of the poem, and the appropriateness and technical quality of the generated image**
 
 **Part 1**
 Please analysis the Chinese Modern Poem first, especially in the areas of key elements, semantics, and core message.
@@ -19,24 +19,23 @@ Image url: {imgURL}
    □ No excessive violence or gore
    □ No inappropriate content
    □ Age-appropriate (suitable for as young as 13 years old)
-   
+   □ {{additional check(s) you can think of}}
    If ANY appropriateness check fails, immediately mark for regeneration.
 
-2. Key Elements (overall score: 1-5)
+2. Core Message (MUST PASS ALL)
+   □ Does the image capture the primary emotion or feeling conveyed in the poem? (e.g., joy, sorrow, peace, anger, longing, etc.)
+   □ Does the image reflect the central theme(s) of the poem? (e.g., love, loss, nature, social justice, identity, etc.)
+   □ Does the image accurately represent any key metaphors, symbols, or allegories used in the poem?
+   □ Does the image convey the overall tone or mood of the poem? (e.g., serious, humorous, optimistic, pessimistic, contemplative, etc.)
+   □ If the poem tells a story or depicts a scene, does the image accurately represent that narrative or setting?
+   □ {{additional check(s) you can think of}}
+   If ANY core message check fails, immediately mark for regeneration.
 
-3. Semantic Representation (overall score: 1-5)
+3. The image should pass at least 2 of the following 3 additional metrics:
 
-4. Core Message (overall score: 1-10)
-
-5. Technical Quality (overall score: 1-5)
-
-Total Score: __/25 (only if passed appropriateness check)
-Minimum acceptable score: 20/25
-
-Decision Process:
-1. If ANY appropriateness check fails → Automatic YES for regeneration
-2. If appropriateness passes but score < 20/25 → YES for regeneration
-3. Only if appropriateness passes AND score ≥ 20/25 → NO for regeneration
+- Key Elements
+- Semantic Representation
+- Technical Quality
 
 Explanation: [Provide specific issues or successful elements]
 
