@@ -27,6 +27,8 @@ async def main():
 
     # custom case
     #poemObj = dataLoader.loadOnePoem("我感覺到車窗的風在吹", 22)
+    #poemObj = dataLoader.loadOnePoem("河與樹", 12)
+    #poemObj = dataLoader.loadOnePoem("我要設法修理壞了的手機", 12)
     #poemObj = dataLoader.loadOnePoem("血玫瑰", 18) # slight mental one
     poemObj = dataLoader.loadOnePoem("大家都是殺人犯", 11) #a mental one
     #poemObj = dataLoader.loadOnePoem("住在精神病院隔壁", 12) #a mental one as well
@@ -44,3 +46,4 @@ async def main():
 # Run the async main function
 if __name__ == "__main__":
     asyncio.run(main())
+ 
