@@ -16,7 +16,7 @@ Image url: {imgURL}
 1. Appropriateness Check (MUST PASS ALL):
    □ No excessive disturbing/creepy elements
    □ All major elements of the image must ressemble elements in real life (e.g. a person cannot have 3 arma)
-   □ No excessive violence or gore
+   □ No excessive violence or gore, e.g. some blood are okay if not excessive.
    □ No inappropriate content
    □ Age-appropriate (suitable for as young as 13 years old)
    

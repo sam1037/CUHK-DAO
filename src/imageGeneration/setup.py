@@ -16,31 +16,51 @@ import dataLoader
 
 async def main():
     #model = "o3-mini-high"
-    model = "Claude-3.7-Sonnet-Reasoning"
+    #model = "Claude-3.7-Sonnet-Reasoning"
     #model = "deepseekr1fw"
     #model = "gpt4_o"
-    #model = "gemini_2_0_flash"
+    model = "gemini_2_0_flash"
 
-    imgModel = "playgroundv3"
-    #imgModel = "playgroundv3"
-    #imgModel = "playgroundv3"
+    playground = "playgroundv3"
+    imagen3 = "imagen3"
+    flux = "flux-pro-1.1"
+    #imgModel = "imagen3-fast"
+    #imgModel = "recraft-v3" # not good, can't do styling
+    #imgModel = "ideogram-v2" # not good, can't do styling
+    #imgModel = "ideogram-v2a" # not good, can't do styling
+    
+    imgModels = ["playgroundv3", "imagen3", "flux-pro-1.1"]
 
     # custom case
     #poemObj = dataLoader.loadOnePoem("我感覺到車窗的風在吹", 22)
+    #poemObj = dataLoader.loadOnePoem("寧靜", 5)
+    #poemObj = dataLoader.loadOnePoem("已讀不回", 15)
+    #poemObj = dataLoader.loadOnePoem("午夜藍", 16)
+    #poemObj = dataLoader.loadOnePoem("殤愛", 16)
+    #poemObj = dataLoader.loadOnePoem("我希望我是一隻雞蛋", 20)
     #poemObj = dataLoader.loadOnePoem("血玫瑰", 18) # slight mental one
     #poemObj = dataLoader.loadOnePoem("大家都是殺人犯", 11) #a mental one
     #poemObj = dataLoader.loadOnePoem("住在精神病院隔壁", 12) #a mental one as well
-    #poemObj = dataLoader.loadOnePoem("腐爛或發酵", 27) #a mental one as well
+    poemObj = dataLoader.loadOnePoem("腐爛或發酵", 27) #a mental one as well
     #poemObj = dataLoader.loadOnePoem("在精神科診室", 28) #a mental one as well
     #poemObj = dataLoader.loadOnePoem("解剖室", 36) #a mental one as well
     #poemObj = dataLoader.loadOnePoem("肉紅色燈光", 43) #a sexual one?
     #poemObj = dataLoader.loadOnePoem("陽痿病人", 43) #a sexual one?
     #poemObj = dataLoader.loadOnePoem("雪老了", 38)
     #poemObj = dataLoader.loadOnePoem("偽童話", 45)
-    poemObj = dataLoader.loadOnePoem("我病了還是這個社會病了", 34)
+    #poemObj = dataLoader.loadOnePoem("我病了還是這個社會病了", 34)
     #poemObj = dataLoader.loadOnePoem("敏感神經", 28) #hard to understand
     #poemObj = dataLoader.loadOnePoem("劊子手的長嘆", 15) #hard to understand
-    await generateAndSaveImg(poemObj, model = model, imgModel=imgModel)  # Properly await the coroutine
+    
+    #await generateAndSaveImg(poemObj, model = model, imgModel=imgModel)  # Properly await the coroutine
+
+    # generate for all img models for one poem
+    await generateAndSaveImg(poemObj, model = model, imgModel=playground)
+    #await generateAndSaveImg(poemObj, model = model, imgModel=flux)
+    #await generateAndSaveImg(poemObj, model = model, imgModel=imagen3)
+
+    #for imgModel in imgModels:
+    #    await generateAndSaveImg(poemObj, model = model, imgModel=imgModel)  # Properly await the coroutine
 
 # Run the async main function
 if __name__ == "__main__":
