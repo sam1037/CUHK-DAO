@@ -40,7 +40,8 @@ async def generatePoemImage(prompt, model = "playgroundv3"):
     print("DEBUG: generated image")
     #return url of the generated image
     url = extract_url(finalChunk["text"])
-    return url
+    chatId = finalChunk["chatId"]
+    return url, chatId
 
 
     # save the image

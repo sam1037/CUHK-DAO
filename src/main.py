@@ -20,7 +20,7 @@ print(f"There are a total of {total_poems} poems.")
 # word count visulization
 visualize_wordcount_stat(wordcount_stat)
 
-# sentiment visulization
+# sentiment visualization
 visualize_sentiment_stat(sentiment_result)
 # generate_sentiment_barchart_top20(poems)
 

@@ -97,6 +97,7 @@ async def imgGenPromptGeneration(client, chatId, analysis, model = "gemini_2_0_f
     async for chunk in client.send_message(bot=model, message=message, chatId=chatId):
         finalChunk = chunk
     imgGenPrompt = finalChunk["text"]
+    chatId = finalChunk["chatId"]
 
     # verify if response is diff from last response
     while imgGenPrompt == analysis or imgGenPrompt == '':
@@ -106,6 +107,7 @@ async def imgGenPromptGeneration(client, chatId, analysis, model = "gemini_2_0_f
         previous_messages = await client.get_previous_messages(model, chatId=chatId, count=1)
         print(previous_messages, type(previous_messages))
         imgGenPrompt = previous_messages[0]["text"]
+        chatId = previous_messages[0]["chatId"]
 
     print("\n[DEBUG] imgGenPrompt b4 cleaning: \n", imgGenPrompt) #debug
 
@@ -113,7 +115,7 @@ async def imgGenPromptGeneration(client, chatId, analysis, model = "gemini_2_0_f
     imgGenPrompt = cleanReasoningLLMResponse(imgGenPrompt)
     print("\n[DEBUG] imgGenPrompt after cleaning: \n", imgGenPrompt) #debug
 
-    return imgGenPrompt
+    return imgGenPrompt, chatId
 
 # function to ask LLM to evaluate the generated image, return if need to regenerate
 async def evaluateImg(client, chatId, imgURL, model = "gemini_2_0_flash"):
@@ -172,13 +174,28 @@ async def imgGenPromptRegenerate(client, chatId, prevRespose, imgURL, suggestion
 
 #TODO enable customize the path of saved image
 async def generateAndSaveImg(poemObj, model = "gemini_2_0_flash", imgModel = "playgroundv3"):
-    # analysis poem, get prompt, generate image
-    client, chatId, analysis = await analysisPoem(poemObj, model)
-    imgGenPrompt = await imgGenPromptGeneration(client, chatId, analysis, model)
-    imgURL = await generatePoemImage(imgGenPrompt, imgModel)
+    shareCodes = {
+        "firstLLM": "",
+        "1stEvalLLM": "",
+        "2ndEvalLLM": "",
+        "3rdEvalLLM": "",
+    }
+
+    # analysis poem, get prompt, generate image, get chatIds, evaluate
+    client, analysisChatId, analysis = await analysisPoem(poemObj, model)
+    imgGenPrompt, imgGenPromptChatId = await imgGenPromptGeneration(client, analysisChatId, analysis, model)
+    imgURL, imgGenChatId = await generatePoemImage(imgGenPrompt, imgModel)
+    
     print("[DEBUG] url\n", imgURL)
-    needRegenerate, evalResponse, thirdPartyChatId = await thirdPartyEvaluateImg(client, chatId, imgURL, poemObj, analysis, model)
+    needRegenerate, evalResponse, thirdPartyChatId = await thirdPartyEvaluateImg(client, analysisChatId, imgURL, poemObj, analysis, model)
     print(f"[DEBUG] need regenerate: {needRegenerate}")
+
+    # update chatIds or sharecode
+    firstLLMShareCode = await client.share_chat(model, analysisChatId)
+    evalShareCode1 = await client.share_chat(model, thirdPartyChatId)
+    evalShareCode2 = ""
+    evalShareCode3 = ""
+    
 
     # regenerate based on the evaluation until its good or the limit is reached
     regenLimit = 2
@@ -188,21 +205,48 @@ async def generateAndSaveImg(poemObj, model = "gemini_2_0_flash", imgModel = "pl
         regenCount += 1
         # get suggestion from 3rd party evaluator
         suggestion = await regenSuggestion(client, thirdPartyChatId, evalResponse, model)
-        # regenerate prompt in 1st LLM
+        # update sharecode accordingly
+        tempShareCode = await client.share_chat(model, thirdPartyChatId)
+        if regenCount == 1:
+            evalShareCode1 = tempShareCode
+        elif regenCount == 2:
+            evalShareCode2 = tempShareCode
+
+        # regenerate prompt in 1st LLM and update sharecode
         print(f"[DEBUG] Regenerating image: {regenCount}-th try")
-        imgGenPrompt = await imgGenPromptRegenerate(client, chatId, prevResponse, imgURL, suggestion, model)
+        imgGenPrompt = await imgGenPromptRegenerate(client, analysisChatId, prevResponse, imgURL, suggestion, model)
         print("[DEBUG] Regenerated img gen prompt")
+        firstLLMShareCode = await client.share_chat(model, analysisChatId)
         # regenerate the image
-        imgURL = await generatePoemImage(imgGenPrompt, imgModel)
+        imgURL, imgGenChatId = await generatePoemImage(imgGenPrompt, imgModel)
         print("[DEBUG] new url\n", imgURL)
         # evaluate again
-        needRegenerate, evalResponse, thirdPartyChatId = await thirdPartyEvaluateImg(client, chatId, imgURL, poemObj, analysis, model)
+        needRegenerate, evalResponse, thirdPartyChatId = await thirdPartyEvaluateImg(client, analysisChatId, imgURL, poemObj, analysis, model)
         prevResponse = evalResponse #?
         print(f"[DEBUG] need regenerate: {needRegenerate}")
+        # update shareCodes
+        tempShareCode = await client.share_chat(model, thirdPartyChatId)
+        if regenCount == 1:
+            evalShareCode2 = tempShareCode
+        elif regenCount == 2:
+            evalShareCode3 = tempShareCode
             
     # save the resulting image
     print("[DEBUG] final image url\n", imgURL)
-    saveImgFromUrl(imgURL, f"generatedImages\\11March\\{poemObj['title']}.png")
+    saveImgFromUrl(imgURL, f"generatedImages\\compareImgGenModels\\{poemObj['title']}_{model}_{imgModel}.png")
+
+    # save the sharecode and save as json file
+    shareCodes["firstLLM"] = firstLLMShareCode
+    shareCodes["1stEvalLLM"] = evalShareCode1
+    shareCodes["2ndEvalLLM"] = evalShareCode2
+    shareCodes["3rdEvalLLM"] = evalShareCode3
+    print("[DEBUG] shareCodes: \n", shareCodes)
+
+    issue_number = poemObj.get('issueNumber', 'unknown')
+    shareCodesPath = Path(__file__).parent.parent.parent / "shareCodes" / str(issue_number)
+    shareCodesPath.mkdir(parents=True, exist_ok=True)
+    with open(shareCodesPath / f"{poemObj['title']}_{model}_{imgModel}.json", 'w', encoding='utf-8') as f:
+        json.dump(shareCodes, f, ensure_ascii=False, indent=4)
     
 
 # get a poemObj given its name and issueNumber

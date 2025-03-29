@@ -29,5 +29,5 @@
     "important_ones": [
         "gemini_2_0_flash", "claude_3_7_sonnet", "Claude-3.5-Sonnet", "Claude-3.7-Sonnet-Reasoning", "gpt4_5_preview", "gpt4_o",
         "deepseekr1fw", "o1", "o3-mini-high",  
-        "playgroundv3"]
+        "playgroundv3", "imagen3"]
 }
