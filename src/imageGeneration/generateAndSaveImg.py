@@ -104,10 +104,10 @@ async def imgGenPromptGeneration(client, chatId, analysis, model = "gemini_2_0_f
         print("ERROR: img gen prompt same as analysis or empty, retrying")
         print("img gen prompt:\n", imgGenPrompt)
         time.sleep(1)
-        previous_messages = await client.get_previous_messages(model, chatId=chatId, count=1)
-        print(previous_messages, type(previous_messages))
+        previous_messages = await client.get_previous_messages(model, chatId=chatId, count=1) #?
+        print("[DEBUG] previous messages: \n", previous_messages) #debug
         imgGenPrompt = previous_messages[0]["text"]
-        chatId = previous_messages[0]["chatId"]
+        # chatId = previous_messages[0]["chatId"] this line seems to be not needed, and will cause error
 
     print("\n[DEBUG] imgGenPrompt b4 cleaning: \n", imgGenPrompt) #debug
 
@@ -167,7 +167,10 @@ async def imgGenPromptRegenerate(client, chatId, prevRespose, imgURL, suggestion
         imgGenPrompt = previous_messages[0]["text"]
 
 
-    print("\n[DEBUG] imgGenPrompt: \n", imgGenPrompt) #debug
+    print("\n[DEBUG] reImgGenPrompt b4 cleaning: \n", imgGenPrompt) #debug
+    # clean it (format is messy if the model is a reasoning model)
+    imgGenPrompt = cleanReasoningLLMResponse(imgGenPrompt)
+    print("\n[DEBUG] reImgGenPrompt after cleaning: \n", imgGenPrompt) #debug
 
     return imgGenPrompt
 
@@ -233,7 +236,7 @@ async def generateAndSaveImg(poemObj, model = "gemini_2_0_flash", imgModel = "pl
             
     # save the resulting image
     print("[DEBUG] final image url\n", imgURL)
-    saveImgFromUrl(imgURL, f"generatedImages\\compareImgGenModels\\{poemObj['title']}_{model}_{imgModel}.png")
+    saveImgFromUrl(imgURL, f"generatedImages\\compareTextModels\\{poemObj['title']}_{model}_{imgModel}.png")
 
     # save the sharecode and save as json file
     shareCodes["firstLLM"] = firstLLMShareCode
@@ -243,7 +246,7 @@ async def generateAndSaveImg(poemObj, model = "gemini_2_0_flash", imgModel = "pl
     print("[DEBUG] shareCodes: \n", shareCodes)
 
     issue_number = poemObj.get('issueNumber', 'unknown')
-    shareCodesPath = Path(__file__).parent.parent.parent / "shareCodes" / str(issue_number)
+    shareCodesPath = Path(__file__).parent.parent.parent / "textModelsShareCodes"
     shareCodesPath.mkdir(parents=True, exist_ok=True)
     with open(shareCodesPath / f"{poemObj['title']}_{model}_{imgModel}.json", 'w', encoding='utf-8') as f:
         json.dump(shareCodes, f, ensure_ascii=False, indent=4)
