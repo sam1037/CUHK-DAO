@@ -104,10 +104,10 @@ async def imgGenPromptGeneration(client, chatId, analysis, model = "gemini_2_0_f
         print("ERROR: img gen prompt same as analysis or empty, retrying")
         print("img gen prompt:\n", imgGenPrompt)
         time.sleep(1)
-        previous_messages = await client.get_previous_messages(model, chatId=chatId, count=1)
-        print(previous_messages, type(previous_messages))
+        previous_messages = await client.get_previous_messages(model, chatId=chatId, count=1) #?
+        print("[DEBUG] previous messages: \n", previous_messages) #debug
         imgGenPrompt = previous_messages[0]["text"]
-        chatId = previous_messages[0]["chatId"]
+        # chatId = previous_messages[0]["chatId"] this line seems to be not needed, and will cause error
 
     print("\n[DEBUG] imgGenPrompt b4 cleaning: \n", imgGenPrompt) #debug
 
@@ -167,7 +167,10 @@ async def imgGenPromptRegenerate(client, chatId, prevRespose, imgURL, suggestion
         imgGenPrompt = previous_messages[0]["text"]
 
 
-    print("\n[DEBUG] imgGenPrompt: \n", imgGenPrompt) #debug
+    print("\n[DEBUG] reImgGenPrompt b4 cleaning: \n", imgGenPrompt) #debug
+    # clean it (format is messy if the model is a reasoning model)
+    imgGenPrompt = cleanReasoningLLMResponse(imgGenPrompt)
+    print("\n[DEBUG] reImgGenPrompt after cleaning: \n", imgGenPrompt) #debug
 
     return imgGenPrompt
 
