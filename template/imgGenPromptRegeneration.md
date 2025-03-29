@@ -11,6 +11,9 @@ Generate a prompt that will be used to create an image of the given chinese mode
 
 Choose an art style suitable for the poem and specify it in the prompt.
 
+The image generation model has the following description:
+Latest image model from Playground, with industry leading capabilities in understanding complex prompts to generate realistic images, logos, typography, and more. Allows users to specify elements to avoid in the image using the `--no` parameter at the end of the prompt (e.g. "Tall trees, daylight --no rain"). Optionally, specify the aspect ratio using the `--aspect` parameter (e.g. "Tall trees, daylight --aspect 1:2"). Powered by Playground_v3 from playground.com.
+
 Length Requirements:
 - Maximum 100 words
 
