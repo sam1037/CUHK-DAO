@@ -236,7 +236,11 @@ async def generateAndSaveImg(poemObj, model = "gemini_2_0_flash", imgModel = "pl
             
     # save the resulting image
     print("[DEBUG] final image url\n", imgURL)
-    saveImgFromUrl(imgURL, f"generatedImages\\compareTextModels\\{poemObj['title']}_{model}_{imgModel}.png")
+    issue_number = poemObj.get('issueNumber', 'unknown')
+    # Ensure the directory exists before saving the image
+    imgSavePath = Path(__file__).parent.parent.parent / "generatedImages" / "actual" / f"issueNumber{issue_number}"
+    imgSavePath.mkdir(parents=True, exist_ok=True)
+    saveImgFromUrl(imgURL, imgSavePath / f"{poemObj['title']}_{model}_{imgModel}.png")
 
     # save the sharecode and save as json file
     shareCodes["firstLLM"] = firstLLMShareCode
@@ -244,9 +248,8 @@ async def generateAndSaveImg(poemObj, model = "gemini_2_0_flash", imgModel = "pl
     shareCodes["2ndEvalLLM"] = evalShareCode2
     shareCodes["3rdEvalLLM"] = evalShareCode3
     print("[DEBUG] shareCodes: \n", shareCodes)
-
-    issue_number = poemObj.get('issueNumber', 'unknown')
-    shareCodesPath = Path(__file__).parent.parent.parent / "textModelsShareCodes"
+    
+    shareCodesPath = Path(__file__).parent.parent.parent / "actualShareCodes" / f"issueNumber{issue_number}"
     shareCodesPath.mkdir(parents=True, exist_ok=True)
     with open(shareCodesPath / f"{poemObj['title']}_{model}_{imgModel}.json", 'w', encoding='utf-8') as f:
         json.dump(shareCodes, f, ensure_ascii=False, indent=4)

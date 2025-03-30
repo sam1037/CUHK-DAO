@@ -32,3 +32,14 @@ def loadOnePoem(poemName, issueNum):
     with open(file_to_open, 'r', encoding='utf-8') as f:
         poemObj = json.load(f)
     return poemObj
+
+# get all poems in a specific issue, return a list of poemObj
+def loadOneIssue(issueNum):
+    templatePath = Path(__file__).parent.parent / "data" / f"issueNumber{issueNum}"
+    allPoems = []
+    for file in os.listdir(templatePath):
+        if file.endswith(".json"):
+            with open(templatePath / file, 'r', encoding='utf-8') as f:
+                poemObj = json.load(f)
+                allPoems.append(poemObj)
+    return allPoems

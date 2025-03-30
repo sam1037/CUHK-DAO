@@ -40,4 +40,11 @@ Decision Process:
 
 Explanation: [Provide specific issues or successful elements]
 
-The last line must be "Regenerate: YES/NO"
+The last line of your response must be "Regenerate: YES" or "Regenerate: NO".
+
+The last line must not be something like the following:
+"Regeneration not required: NO"
+"No need for regeneration: NO"
+"Decision: Regeneration not necessary"
+"Conclusion: Do not regenerate"
+"Regenerate: Not required (NO)"
