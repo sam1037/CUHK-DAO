@@ -1,5 +1,3 @@
-# this script shall generate the images for the needed poems
-
 from generateAndSaveImg import generateAndSaveImg
 import sys
 import os

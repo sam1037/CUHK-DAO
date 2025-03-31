@@ -1,0 +1,187 @@
+<div id="gallery-container">
+    <!-- JavaScript will dynamically populate this section -->
+</div>
+
+<script>
+    // Poem data
+    const poems = [
+        {
+            "title": "掃墓",
+            "author": "靈歌",
+            "body": [
+                "春的衣角",
+                "被已經關閉的晚冬",
+                "夾住了",
+                "匆忙的撕裂擠進四月",
+                "山上的路陡了些，濕滑了些",
+                "今年的清明是壅塞的",
+                "父母寢室，多隔了一房",
+                "多了雙枕頭",
+                "嫺嫂主內，哥哥主外",
+                "女簪上春花，男裏入秋葉",
+                "季節的鎖鏈繫在雙腕",
+                "一縷難捨的魂",
+                "追上難離的魄",
+                "疊成細雨罪罪",
+                "一路的泥，捏著團圓",
+                "淚在雨中分外鹹",
+                "流進嘴角",
+                "苦澀中透露著些甜",
+                "距離歲末的圍爐",
+                "雨簾捲起新芽春色",
+                "抽出絲般的陽光在額頭翻滾",
+                "在日漸蒼老的面容臉頰葉",
+                "秋風起時",
+                "屬於我的飛雪",
+                "還遠嗎？"
+            ],
+            "issueNumber": 1,
+            "image": "https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/03/舊址_gpt4_o_flux-pro-1.1.jpg"
+        },
+        {
+            "title": "喊月亮回家",
+            "author": "王福友",
+            "body": [
+                "深夜裏，母親把我的夢",
+                "晾在門前的樹枝上",
+                "其實濕了的只是夢的一角",
+                "母親卻驚動了整個村子",
+                "躺在星星的身邊",
+                "夢中一片星光閃爍",
+                "傳來星星的竊竊私語",
+                "每一根白髮都側耳傾聽",
+                "村口，母親用瘦瘦的聲音",
+                "喊出門的月亮回家"
+            ],
+            "issueNumber": 1,
+            "image": "https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/03/舊址_gpt4_o_flux-pro-1.1.jpg"
+        },
+        {
+            "title": "你抽走的肋骨",
+            "author": "朵拉",
+            "body": [
+                "你選擇這麼深的夜來看我",
+                "頂著我迷戀的月光",
+                "身後",
+                "百合的香氣",
+                "固定紋迹的結果",
+                "可是，我該如何表達",
+                "更深沉的意義",
+                "如果我留下肋骨的意象",
+                "是否可以取走你",
+                "優美的輪廓"
+            ],
+            "issueNumber": 1,
+            "image": "https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/03/舊址_gpt4_o_flux-pro-1.1.jpg"
+        }
+    ];
+
+    // Dynamically populate the gallery
+    document.addEventListener('DOMContentLoaded', function () {
+        const galleryContainer = document.getElementById('gallery-container');
+
+        poems.forEach(poem => {
+            const poemElement = document.createElement('div');
+            poemElement.classList.add('poem-item');
+
+            const content = `
+                <div class="poem-image" style="background-image: url('${poem.image}')">
+                    <div class="poem-overlay">
+                        <h2>${poem.title}</h2>
+                        <h3>作者: ${poem.author}</h3>
+                        <div class="poem-body">
+                            ${poem.body.map(line => `<p>${line}</p>`).join('')}
+                        </div>
+                        <p class="issue-number">刊號: ${poem.issueNumber}</p>
+                    </div>
+                </div>
+            `;
+
+            poemElement.innerHTML = content;
+            galleryContainer.appendChild(poemElement);
+        });
+    });
+</script>
+
+<style>
+    /* Gallery container */
+    #gallery-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    /* Poem item container */
+    .poem-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Poem image */
+    .poem-image {
+        width: 100%;
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    /* Poem overlay (hidden by default) */
+    .poem-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        overflow-y: auto; /* Scrollable content for long poems */
+        padding: 20px;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Show overlay on hover */
+    .poem-image:hover .poem-overlay {
+        opacity: 1;
+    }
+
+    /* Title, author, and body styles */
+    .poem-overlay h2 {
+        font-size: 18px;
+        margin: 0 0 10px;
+        font-weight: bold;
+    }
+
+    .poem-overlay h3 {
+        font-size: 14px;
+        margin: 0 0 10px;
+        color: #ccc;
+    }
+
+    .poem-body {
+        font-size: 14px;
+        line-height: 1.5;
+        max-height: 150px; /* Limit the height of the scrollable area */
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+
+    .poem-body p {
+        margin: 0;
+    }
+
+    /* Issue number */
+    .issue-number {
+        font-size: 12px;
+        font-style: italic;
+        color: #aaa;
+    }
+</style>
