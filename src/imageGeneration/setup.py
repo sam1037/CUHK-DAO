@@ -39,7 +39,7 @@ async def main():
     flux = "flux-pro-1.1"
 
     # load the poems for a particular issue and generate the images
-    issues = [8]
+    issues = [10,11,12]
     for issueNum in issues:
         await generateForOneIssue(issueNum, gpt4o, flux)
 
