@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue 22</title>
+    <style>
+        .poetry-gallery-container * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .poetry-gallery-container {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            font-size: 87.5%; /* 50% of original 175% */
+        }
+        
+        .poetry-gallery-title {
+            text-align: center;
+            margin: 20px 0 30px;
+            color: #2c3e50;
+            font-size: 2.2rem; /* 50% of original 4.4rem */
+            font-weight: bold;
+        }
+        
+        .poetry-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 30px;
+            margin: 0 auto;
+        }
+        
+        .poetry-image-container {
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            background-color: white;
+            overflow: hidden;
+        }
+        
+        .poetry-image-container:hover {
+            transform: translateY(-5px);
+        }
+        
+        .poetry-image-wrapper {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+        }
+        
+        .poetry-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: filter 0.3s ease;
+        }
+        
+        .poetry-info {
+            padding: 15px;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .poetry-title {
+            margin-bottom: 5px;
+            font-size: 1.05rem; /* 50% of original 2.1rem */
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .poetry-author {
+            font-size: 0.79rem; /* 50% of original 1.58rem */
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .poetry-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .poetry-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .poetry-content {
+            background-color: white;
+            border-radius: 8px;
+            width: auto;
+            min-width: 300px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px 40px;
+            position: relative;
+            text-align: center;
+        }
+        
+        .poetry-modal-title {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.575rem; /* 50% of original 3.15rem */
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .poetry-modal-author {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.05rem; /* 50% of original 2.1rem */
+            font-weight: normal;
+            font-style: italic;
+            text-align: center;
+        }
+        
+        .poetry-body {
+            line-height: 1.8;
+            font-size: 1.09rem; /* 75% of current 1.45rem */
+            text-align: center;
+        }
+        
+        .poetry-body p {
+            margin-bottom: 0.7em;
+        }
+        
+        .poetry-body p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .poetry-close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.315rem; /* 50% of original 2.63rem */
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .poetry-close-button:hover {
+            color: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .poetry-gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                grid-gap: 20px;
+            }
+            
+            .poetry-content {
+                padding: 20px;
+            }
+            
+            .poetry-modal-title {
+                font-size: 1.8rem;
+            }
+            
+            .poetry-modal-author {
+                font-size: 1.2rem;
+            }
+            
+            .poetry-body {
+                font-size: 1.3rem; /* Fixed to be smaller for mobile */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .poetry-gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                grid-gap: 15px;
+            }
+            
+            .poetry-title {
+                font-size: 1.2rem;
+            }
+            
+            .poetry-author {
+                font-size: 0.9rem;
+            }
+            
+            .poetry-content {
+                padding: 15px;
+                width: 95%;
+            }
+            
+            .poetry-body {
+                font-size: 1.1rem; /* Even smaller for very small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="poetry-gallery-container">
+        <div class="poetry-gallery-title">Issue 22</div>
+        
+        <div class="poetry-gallery-grid" id="poem-gallery">
+            <!-- Gallery items will be populated by JavaScript -->
+        </div>
+    </div>
+    
+    <div class="poetry-modal" id="poem-modal">
+        <div class="poetry-content">
+            <button class="poetry-close-button" id="close-modal">&times;</button>
+            <div class="poetry-modal-title" id="modal-title"></div>
+            <div class="poetry-modal-author" id="modal-author"></div>
+            <div class="poetry-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // ISSUE-SPECIFIC DATA
+        const ISSUE_NUMBER = 22;
+        
+        // Poem data embedded directly in the HTML file
+        const poemData = [
+    {
+        "title": "凡人的每日低語",
+        "author": "張鈞傑",
+        "body": [
+            "我們向下一個街角走了一步",
+            "三步",
+            "九步之後",
+            "沒有更近",
+            "然後黃昏開始訕笑昨天",
+            "你也是一樣你怎麼",
+            "老學不到教訓",
+            "分段沒有",
+            "改變什麼還是",
+            "要尋找一顆螺絲",
+            "用最細微的觀察方式",
+            "並選擇在接近勝利",
+            "的時候宣布",
+            "全劇告終",
+            "你的歌我的",
+            "歌唱出來都是同一個音",
+            "色",
+            "狼也是一種生活狀態",
+            "你也一種",
+            "我也是一種",
+            "夜幕降到一半",
+            "已經睡著了",
+            "而我其實可以不用醒",
+            "假裝你是我這樣我就",
+            "可以同時在庸庸碌碌同時在夢裡",
+            "試圖解釋未來與死亡的差異性"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "叮叮糖",
+        "author": "程志森",
+        "body": [
+            "樸實素材,廉價的",
+            "你烹煮了",
+            "在世上提煉滿滿的甜蜜",
+            "你笑了,讓我存在",
+            "並一下一下把我打成破碎",
+            "在我過期前讓你味蕾滿載而歸"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "在你的畫室吞噬我",
+        "author": "麥燕飛",
+        "body": [
+            "我的小孩看不見現實與虛幻",
+            "靈魂穿越到陰森的殿堂",
+            "人很小 大人不在",
+            "景緻與這般那般都成就了黑白",
+            "來了鬼怪似的一陣風 是偶然還是要入夢",
+            "這是一座萬叢林裡的孤墳",
+            "怕 我說",
+            "是不是可以這樣天荒地老",
+            "親吻你愛的神",
+            "輕咬耳背 別怕我在"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "奔跑",
+        "author": "胡平",
+        "body": [
+            "突然，走在我後面的那個人",
+            "加快腳步，超過我",
+            "然後他開始奔跑起來",
+            "我朝他望了一眼",
+            "也像他那樣，加快腳步",
+            "我也跟著奔跑起來",
+            "走在我周圍的人，抬眼望我",
+            "目光中充滿疑慮",
+            "其中有一個，選擇像我一樣",
+            "加快腳步，奔跑起來",
+            "另一個似乎在經過慎重的",
+            "考慮之後，也開始奔跑起來",
+            "越來越多的人",
+            "他們的臉上露出狐疑的神色",
+            "然而最終他們都選擇妥協",
+            "也都開始奔跑起來。現在",
+            "大街上到處是黑壓壓的人群",
+            "他們盲目地朝著殯儀館跑去"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "密碼",
+        "author": "張文捷",
+        "body": [
+            "我時常擔心自己會把自己弄丟",
+            "在銀行卡裡把財富弄丟",
+            "在博客中把文章弄丟",
+            "在郵箱裡將朋友和感情弄丟",
+            "我的扣扣號、微信、淘寶網、社保卡、信用卡",
+            "一組組資料擴展我生活的隱私部位",
+            "我早已不是一朵純淨的花",
+            "憑陽光就能打開自己",
+            "密碼是唯一證明我存在的一把鑰匙",
+            "仿佛藥能證明疾病存在",
+            "仿佛努力去愛，才能證明世界有被愛的人",
+            "資料也有生銹的時候",
+            "當生日、紀念日這些常用的密碼失密",
+            "我是否需要為創造一組特殊的數位組合",
+            "去找一個秘密的情人",
+            "或者策劃一場驚天的事件",
+            "我已被帶入虛無，這些糾結錯亂的魔咒",
+            "我是誰，我仍須等待身份證上的那組數字",
+            "確認我自己"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "幸福",
+        "author": "林則堯",
+        "body": [
+            "那人想以自身餵熊",
+            "當他終於跋涉到北極",
+            "卻已又餓又瘦",
+            "北極熊感動於那人的義氣",
+            "還是吃了他",
+            "人和熊心裡都暖暖地",
+            "牠們都上了天堂"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "愛情",
+        "author": "葉欣榮",
+        "body": [
+            "註冊了你的帳號",
+            "無法登入",
+            "原來忘了密碼",
+            "以為太久沒說，愛你"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "我感覺到車窗的風在吹",
+        "author": "魏鵬展",
+        "body": [
+            "玻璃很平滑",
+            "伸手摸 我覺得風在吹",
+            "我厭惡車箱的空調味",
+            "我努力尋覓",
+            "闊大的車窗",
+            "我無法發現",
+            "一絲罅隙",
+            "我凝視 又凝視",
+            "窗邊的鐵錘",
+            "我想伸手取",
+            "鐵錘的堅硬",
+            "與玻璃的碎裂",
+            "我伸手摸",
+            "平滑的玻璃",
+            "我感覺到",
+            "春天的風在吹"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "時光的書房",
+        "author": "胡淑娟",
+        "body": [
+            "時光將自己隔音",
+            "成一爿僻靜的書房",
+            "四面囚禁孤獨",
+            "沒料到",
+            "蠹蟲齧咬著詩",
+            "吐出了顢頇",
+            "而躺在扉頁裡的半行字",
+            "疼痛 搜索 喧囂",
+            "回音 裊繞"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "衣架",
+        "author": "錢鍾齡",
+        "body": [
+            "這個世界",
+            "除了人和動物之外",
+            "有骨頭的事物真不少",
+            "比如衣架",
+            "骨頭生銹了",
+            "還要支撐起自己的欲望"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "賭",
+        "author": "周凱",
+        "body": [
+            "我的朋友",
+            "他用十年寫詩",
+            "賭名",
+            "他勝了",
+            "得到了大把的錢",
+            "他又用大把的錢",
+            "賭愛",
+            "結果",
+            "又贏了",
+            "朝思暮想的女人",
+            "後來",
+            "他和生活",
+            "賭命",
+            "在一場意外中",
+            "活著走了出來",
+            "最後",
+            "他卻跟我",
+            "賭狠",
+            "把所有的一切",
+            "輸給了我",
+            "而",
+            "在我這驚蟄的",
+            "半生之前",
+            "賭",
+            "從來沒有贏過"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "躲貓貓",
+        "author": "徐夢陽",
+        "body": [
+            "莊嚴的廟埕",
+            "上演了一齣電影",
+            "底片再倒轉",
+            "回憶似火車般的撞來",
+            "而一群小孩",
+            "無懼大人叫喊",
+            "躲在",
+            "神明桌的下方",
+            "悄悄地",
+            "睡著",
+            "直到夜晚聽見父母再度叫喊",
+            "這才驚醒",
+            "發現",
+            "身軀已經長大",
+            "與過去的我躲貓貓",
+            "躲進我再也找不到的",
+            "童年情懷"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "輕",
+        "author": "吾言",
+        "body": [
+            "如果可以",
+            "我會寫你，寫的很輕",
+            "溫柔的在行行間",
+            "提你",
+            "卻又在提妳的時候",
+            "太輕",
+            "如果可以",
+            "我會留你，留的很輕",
+            "會留你在",
+            "明年三月的第一場雨",
+            "那雨才能下得",
+            "很輕",
+            "如果可以",
+            "我有權利，選擇傷心",
+            "期許自己能傷得很輕",
+            "寫不滿一頁的",
+            "墨和細雨",
+            "暈開的",
+            "很輕"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "遮光",
+        "author": "藍荳",
+        "body": [
+            "反正陽光再燦爛也",
+            "照不亮我",
+            "內心的陰霾",
+            "所以撐起陽傘",
+            "避免皮膚跟心底一樣",
+            "黑沈"
+        ],
+        "issueNumber": 22
+    },
+    {
+        "title": "重量",
+        "author": "畢翔",
+        "body": [
+            "我把繩子綁到掛浴簾的擔子上",
+            "才剛把腦袋塞進去",
+            "我就后悔了",
+            "沒理由要掛浴簾的擔子",
+            "背負我人生的重量"
+        ],
+        "issueNumber": 22
+    }
+];
+
+        // When the document loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Populate the gallery
+            populateGallery();
+            
+            // Add click event to all gallery items
+            document.querySelectorAll('.poetry-image-container').forEach(container => {
+                container.addEventListener('click', function() {
+                    const index = this.dataset.poemIndex;
+                    openPoemModal(index);
+                });
+            });
+            
+            // Close modal when clicking the close button
+            document.getElementById('close-modal').addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside the poem content
+            document.getElementById('poem-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // Close modal with ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('poem-modal').classList.contains('active')) {
+                    closeModal();
+                }
+            });
+        });
+        
+        // Function to populate the gallery
+        function populateGallery() {
+            const gallery = document.getElementById('poem-gallery');
+            
+            poemData.forEach((poem, index) => {
+                // Create image container
+                const container = document.createElement('div');
+                container.className = 'poetry-image-container';
+                container.dataset.poemIndex = index;
+                
+                // Create image wrapper and image
+                const imageWrapper = document.createElement('div');
+                imageWrapper.className = 'poetry-image-wrapper';
+                
+                const img = document.createElement('img');
+                // Use the specified image URL format with the poem title
+                img.src = `https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/04/${encodeURIComponent(poem.title)}_gpt4_o_flux-pro-1.1.jpg`;
+                img.alt = poem.title;
+                
+                // Create poem info section
+                const poemInfo = document.createElement('div');
+                poemInfo.className = 'poetry-info';
+                
+                const title = document.createElement('div');
+                title.className = 'poetry-title';
+                title.textContent = poem.title;
+                
+                const author = document.createElement('div');
+                author.className = 'poetry-author';
+                author.textContent = poem.author;
+                
+                // Append elements
+                imageWrapper.appendChild(img);
+                poemInfo.appendChild(title);
+                poemInfo.appendChild(author);
+                
+                container.appendChild(imageWrapper);
+                container.appendChild(poemInfo);
+                
+                gallery.appendChild(container);
+            });
+        }
+        
+        // Function to open modal with poem content
+        function openPoemModal(index) {
+            const poem = poemData[index];
+            
+            document.getElementById('modal-title').textContent = poem.title;
+            document.getElementById('modal-author').textContent = poem.author;
+            
+            // Clear previous content
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = '';
+            
+            // Add each line as a paragraph
+            poem.body.forEach(line => {
+                const paragraph = document.createElement('p');
+                paragraph.textContent = line;
+                modalBody.appendChild(paragraph);
+            });
+            
+            document.getElementById('poem-modal').classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+            
+            // Resize the modal based on content
+            adjustModalWidth();
+        }
+        
+        // Function to adjust modal width based on the content
+        function adjustModalWidth() {
+            // Get the modal content element
+            const modalContent = document.querySelector('.poetry-content');
+            
+            // Reset any previous inline width to allow proper measurement
+            modalContent.style.width = 'auto';
+            
+            // After a small delay to ensure content is rendered
+            setTimeout(() => {
+                // Get the content body
+                const modalBody = document.getElementById('modal-body');
+                
+                // Find the maximum width of the paragraphs
+                let maxWidth = 0;
+                modalBody.querySelectorAll('p').forEach(p => {
+                    const rect = p.getBoundingClientRect();
+                    if (rect.width > maxWidth) {
+                        maxWidth = rect.width;
+                    }
+                });
+                
+                // Add some padding to the max width
+                maxWidth += 80; // 40px padding on each side
+                
+                // Set a minimum width
+                maxWidth = Math.max(maxWidth, 300);
+                
+                // Set a maximum width (90% of viewport)
+                const maxAllowedWidth = window.innerWidth * 0.9;
+                maxWidth = Math.min(maxWidth, maxAllowedWidth);
+                
+                // Set the width
+                modalContent.style.width = `${maxWidth}px`;
+            }, 50);
+        }
+        
+        // Function to close modal
+        function closeModal() {
+            document.getElementById('poem-modal').classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+        
+        // Update modal width on window resize
+        window.addEventListener('resize', () => {
+            if (document.getElementById('poem-modal').classList.contains('active')) {
+                adjustModalWidth();
+            }
+        });
+    </script>
+</body>
+</html>
