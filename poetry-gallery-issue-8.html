@@ -388,7 +388,7 @@
         "issueNumber": 8
     },
     {
-        "title": "為什麼要躲避赤裸 (外一首)",
+        "title": "為什麼要躲避赤裸",
         "author": "老彥娟",
         "body": [
             "來與去都是赤裸的，包括來時的索取與去時偷竊",
@@ -537,8 +537,9 @@
                 imageWrapper.className = 'poetry-image-wrapper';
                 
                 const img = document.createElement('img');
-                // Use the specified image URL format with the poem title
-                img.src = `https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/04/${encodeURIComponent(poem.title)}_gpt4_o_flux-pro-1.1.jpg`;
+                // Use the specified image URL format with the poem 
+                cleaned_title = poem.title.replace(/\s+/g, '-'); // replace spaces with '-'
+                img.src = `https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/04/${encodeURIComponent(cleaned_title)}_gpt4_o_flux-pro-1.1.jpg`;
                 img.alt = poem.title;
                 
                 // Create poem info section
