@@ -601,8 +601,9 @@
                 imageWrapper.className = 'poetry-image-wrapper';
                 
                 const img = document.createElement('img');
-                // Use the specified image URL format with the poem title
-                img.src = `https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/04/${encodeURIComponent(poem.title)}_gpt4_o_flux-pro-1.1.jpg`;
+                // Use the specified image URL format with the poem 
+                cleaned_title = poem.title.replace(/\s+/g, '-'); // replace spaces with '-'
+                img.src = `https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/04/${encodeURIComponent(cleaned_title)}_gpt4_o_flux-pro-1.1.jpg`;
                 img.alt = poem.title;
                 
                 // Create poem info section

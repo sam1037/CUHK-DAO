@@ -46,7 +46,7 @@ def generate_gallery_html(issue_number: int, poems: List[Dict[str, Any]], templa
         poem_data_json=poems_json
     )
 
-def generate_all_galleries(total_issues: int) -> None:
+def generate_all_galleries(start_issue, end_issue) -> None:
     """
     Generate all gallery HTML files
     
@@ -63,7 +63,7 @@ def generate_all_galleries(total_issues: int) -> None:
     template = read_template()
     
     # Generate a file for each issue
-    for issue_number in range(1, total_issues + 1):
+    for issue_number in range(start_issue, end_issue + 1):
         try:
             # Load poems for this issue using your existing function
             poems = loadOneIssue(issue_number)
@@ -81,11 +81,12 @@ def generate_all_galleries(total_issues: int) -> None:
         except Exception as e:
             print(f"Error generating gallery for Issue {issue_number}: {str(e)}")
     
-    print(f"Completed generating {total_issues} gallery HTML files in '{output_dir}' directory")
+    print(f"Completed generating {end_issue - start_issue + 1} gallery HTML files in '{output_dir}' directory")
 
 if __name__ == "__main__":
     # Configure the total number of issues
-    TOTAL_ISSUES = 45
+    START_ISSUE = 1
+    END_ISSUE = 45
     
     # Generate all galleries
-    generate_all_galleries(TOTAL_ISSUES)
+    generate_all_galleries(1, 45)

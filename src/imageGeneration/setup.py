@@ -42,7 +42,8 @@ async def main():
     gpt4o = "gpt4_o"
     flux = "flux-pro-1.1"
 
-    skip_poems = ["拿槍的孩子"]
+    skip_poems = []
+    #skip_poems = ["拿槍的孩子", "牧羊人"]
 
     # generate for one poem for demo
     #poem = dataLoader.loadOnePoem("我病了還是這個社會病了", 34)
@@ -50,17 +51,9 @@ async def main():
     #await generateAndSaveImg(poem, gpt4o, flux)
 
     # load the poems for a particular issue and generate the images
-    startIssue = 1
+    startIssue =1
     endIssue = 45
 
-    for issueNum in range(startIssue, endIssue + 1):
-        await generateForOneIssue(issueNum, gpt4o, flux, skip_poems)
-
-    # for good measure
-    for issueNum in range(startIssue, endIssue + 1):
-        await generateForOneIssue(issueNum, gpt4o, flux, skip_poems)
-
-    # for good measure
     for issueNum in range(startIssue, endIssue + 1):
         await generateForOneIssue(issueNum, gpt4o, flux, skip_poems)
     
