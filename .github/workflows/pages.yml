@@ -1,0 +1,19 @@
+name: Deploy HTML Galleries
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'HTMLForWordpress/gallery_output/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: HTMLForWordpress/gallery_output
+          branch: gh-pages
