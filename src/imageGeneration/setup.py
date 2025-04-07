@@ -44,20 +44,26 @@ async def main():
 
     skip_poems = ["拿槍的孩子"]
 
-    poem = dataLoader.loadOnePoem("我病了還是這個社會病了", 34)
-    time.sleep(10)
-    await generateAndSaveImg(poem, gpt4o, flux)
+    # generate for one poem for demo
+    #poem = dataLoader.loadOnePoem("我病了還是這個社會病了", 34)
+    #time.sleep(10)
+    #await generateAndSaveImg(poem, gpt4o, flux)
 
-    """
     # load the poems for a particular issue and generate the images
-    
-    for issueNum in range(1,36):
+    startIssue = 1
+    endIssue = 45
+
+    for issueNum in range(startIssue, endIssue + 1):
         await generateForOneIssue(issueNum, gpt4o, flux, skip_poems)
 
     # for good measure
-    for issueNum in range(1,36):
+    for issueNum in range(startIssue, endIssue + 1):
         await generateForOneIssue(issueNum, gpt4o, flux, skip_poems)
-    """
+
+    # for good measure
+    for issueNum in range(startIssue, endIssue + 1):
+        await generateForOneIssue(issueNum, gpt4o, flux, skip_poems)
+    
 
 # Run the async main function
 if __name__ == "__main__":
