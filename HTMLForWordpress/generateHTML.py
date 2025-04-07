@@ -85,7 +85,7 @@ def generate_all_galleries(total_issues: int) -> None:
 
 if __name__ == "__main__":
     # Configure the total number of issues
-    TOTAL_ISSUES = 3
+    TOTAL_ISSUES = 10
     
     # Generate all galleries
     generate_all_galleries(TOTAL_ISSUES)
