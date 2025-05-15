@@ -1,14 +1,3 @@
-This project is for CUHK Data Analytics Oppotunity.
+This project is for CUHK Data Analytics Practice Opportunity 2024/25.
 
-## Acknowledgement:
-//TODO
-
-## Basic description of the project:
-This project aims to 
-
-## Done what
-Basic analysis, visulization and correlation matrix.
-Image generation with feedback loop
-
-## How to use
-For image generation, token is needed for POE_API_WRAPPER
+Please see the following link: [link](https://dsprojects.lib.cuhk.edu.hk/en/projects/chinese-modern-poetry/introduction/)
