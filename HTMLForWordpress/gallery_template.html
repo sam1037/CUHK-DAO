@@ -241,11 +241,21 @@
             // Populate the gallery
             populateGallery();
             
+            //! change due to copyright
             // Add click event to all gallery items
             document.querySelectorAll('.poetry-image-container').forEach(container => {{
                 container.addEventListener('click', function() {{
-                    const index = this.dataset.poemIndex;
-                    openPoemModal(index);
+                    // Find the title element within this container
+                    const titleElement = container.querySelector('.poetry-info .poetry-title');
+                    const title = titleElement ? titleElement.textContent : '';
+
+                    // open the link in a new tab
+                    const baseUrl = "https://hklit.lib.cuhk.edu.hk/explore/#/search?title=";
+                    const encodedTitle = encodeURIComponent(title); // Encode the title for the URL
+                    const sourceParam = "&source=小說與詩";
+                    const poemUrl = baseUrl + encodedTitle + sourceParam;
+
+                    window.open(poemUrl);
                 }});
             }});
             
@@ -267,48 +277,61 @@
             }});
         }});
         
-        // Function to populate the gallery
         function populateGallery() {{
-            const gallery = document.getElementById('poem-gallery');
-            
-            poemData.forEach((poem, index) => {{
-                // Create image container
-                const container = document.createElement('div');
-                container.className = 'poetry-image-container';
-                container.dataset.poemIndex = index;
-                
-                // Create image wrapper and image
-                const imageWrapper = document.createElement('div');
-                imageWrapper.className = 'poetry-image-wrapper';
-                
-                const img = document.createElement('img');
-                // Use the specified image URL format with the poem 
-                cleaned_title = poem.title.replace(/\s+/g, '-'); // replace spaces with '-'
-                img.src = `https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/04/${{encodeURIComponent(cleaned_title)}}_gpt4_o_flux-pro-1.1.jpg`;
-                img.alt = poem.title;
-                
-                // Create poem info section
-                const poemInfo = document.createElement('div');
-                poemInfo.className = 'poetry-info';
-                
-                const title = document.createElement('div');
-                title.className = 'poetry-title';
-                title.textContent = poem.title;
-                
-                const author = document.createElement('div');
-                author.className = 'poetry-author';
-                author.textContent = poem.author;
-                
-                // Append elements
-                imageWrapper.appendChild(img);
-                poemInfo.appendChild(title);
-                poemInfo.appendChild(author);
-                
-                container.appendChild(imageWrapper);
-                container.appendChild(poemInfo);
-                
-                gallery.appendChild(container);
-            }});
+            const gallery = document.getElementById('poem-gallery');
+
+            poemData.forEach((poem, index) => {{
+                // Create image container
+                const container = document.createElement('div');
+                container.className = 'poetry-image-container';
+                container.dataset.poemIndex = index; // Keep this for modal clicking
+
+                // Create image wrapper and image
+                const imageWrapper = document.createElement('div');
+                imageWrapper.className = 'poetry-image-wrapper';
+
+                const img = document.createElement('img');
+                // Use the specified image URL format with the poem
+                cleaned_title = poem.title.replace(/\s+/g, '-'); // replace spaces with '-'
+                img.src = `https://dsprojects.lib.cuhk.edu.hk/wp-content/uploads/2025/04/${{encodeURIComponent(cleaned_title)}}_gpt4_o_flux-pro-1.1.jpg`;
+                img.alt = poem.title;
+
+                // Create poem info section
+                const poemInfo = document.createElement('div');
+                poemInfo.className = 'poetry-info';
+
+                // Construct the URL from the title
+                const baseUrl = "https://hklit.lib.cuhk.edu.hk/explore/#/search?title=";
+                const encodedTitle = encodeURIComponent(poem.title); // Encode the title for the URL
+                const sourceParam = "&source=小說與詩";
+                const poemUrl = baseUrl + encodedTitle + sourceParam;
+
+                // Create title as a link
+                const titleLink = document.createElement('a'); // Create an anchor element
+                titleLink.className = 'poetry-title'; // Use existing class for styling
+                titleLink.textContent = poem.title;
+                titleLink.href = poemUrl; // Set the derived URL
+                titleLink.target = '_blank'; // Optional: Open in a new tab
+
+                // Prevent the link click from triggering the modal click
+                titleLink.addEventListener('click', function(event) {{
+                     event.stopPropagation(); // Stop the event from bubbling up to the container
+                }});
+
+                const author = document.createElement('div');
+                author.className = 'poetry-author';
+                author.textContent = poem.author;
+
+                // Append elements
+                imageWrapper.appendChild(img);
+                poemInfo.appendChild(titleLink); // Append the link
+                poemInfo.appendChild(author);
+
+                container.appendChild(imageWrapper);
+                container.appendChild(poemInfo); // Append the info section below the image wrapper
+
+                gallery.appendChild(container);
+            }});
         }}
         
         // Function to open modal with poem content
@@ -322,6 +345,8 @@
             const modalBody = document.getElementById('modal-body');
             modalBody.innerHTML = '';
             
+            //!copyright
+            poem.body = []
             // Add each line as a paragraph
             poem.body.forEach(line => {{
                 const paragraph = document.createElement('p');
