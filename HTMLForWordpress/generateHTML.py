@@ -37,8 +37,11 @@ def generate_gallery_html(issue_number: int, poems: List[Dict[str, Any]], templa
     Returns:
         HTML content as a string
     """
-    # Convert the poems list to a JSON string that can be embedded in JavaScript
-    poems_json = json.dumps(poems, ensure_ascii=False, indent=4)
+    # !copyright Create a filtered version of poems without the 'body' field using concise list comprehension
+    filtered_poems = [{k: v for k, v in poem.items() if k != 'body'} for poem in poems]
+    
+    # Convert the filtered poems list to a JSON string that can be embedded in JavaScript
+    poems_json = json.dumps(filtered_poems, ensure_ascii=False, indent=4)
     
     # Format the HTML template with the issue-specific data
     return template.format(
